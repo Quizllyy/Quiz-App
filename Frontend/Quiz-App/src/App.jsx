@@ -7,7 +7,6 @@ import About from "./pages/About.jsx";
 import Contact from "./pages/Contact.jsx";
 
 function App() {
-  console.log("working");
   return (
     <Router>
       <Navbar/>
