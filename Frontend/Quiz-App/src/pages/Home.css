@@ -1,0 +1,43 @@
+* {
+    padding: 0;
+    margin : 0;
+}
+
+.heading {
+    margin-top: 30px;
+    text-align: center;
+    font-size: xx-large;
+}
+
+.box {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn {
+    width: 150px;
+    height: 80px;
+    font-size: larger;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.btn:hover {
+    background-color:#2191FB;
+}
+
+.component {
+    border: 3px solid black;
+    border-radius: 50px;
+    width: 1000px;
+    margin: 0 auto;
+    margin-top: 40px;
+    background-color: #8390FA;
+}
