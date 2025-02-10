@@ -19,7 +19,7 @@ function Navbar() {
     //     </Stack>
     //   </Toolbar>
     // </AppBar>
-    <nav className="bg-#0C6291-900 text-white shadow-lg p-4 fixed w-full top-0 z-50">
+    <nav className="bg-[#0C6291]-900 text-white shadow-lg p-4 fixed w-full top-0 z-50">
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="text-3xl font-bold tracking-wide hover:text-gray-400">
@@ -47,3 +47,4 @@ function Navbar() {
 }
 
 export default Navbar;
+
