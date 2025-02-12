@@ -5,10 +5,18 @@ export default function Home() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex justify-center items-center min-h-[calc(100vh-80px)] bg-gray-100">
+    <div className="flex flex-col justify-start items-center min-h-[calc(100vh-80px)] bg-gradient-to-r from-blue-100 to-purple-200 pt-24">
+      {/* Heading Section */}
+      <h1 className="text-4xl font-extrabold text-gray-800 mb-8">
+        Test Your Knowledge, Track Your Progress
+      </h1>
+      <h3 className="text-xl font-bold text-gray-800 mb-8">
+        Simplified Assessment for Students & Educators
+      </h3>
+
       <div className="bg-white shadow-2xl rounded-2xl p-8 max-w-5xl w-full flex flex-row gap-8 border border-gray-300">
         {/* Start Quiz Section */}
-        <div className="flex-1 shadow-md rounded-xl p-6 transition-transform hover:scale-105 text-center border border-gray-300 hover:shadow-lg">
+        <div className="flex-1 shadow-md rounded-xl p-6 transition-transform hover:scale-105 text-center border border-gray-300 hover:shadow-lg bg-blue-50">
           <h5 className="text-xl font-semibold mb-4">Start a Quiz</h5>
           <p className="text-gray-600 mb-6">
             Enter your unique quiz code and begin the test.
@@ -21,7 +29,7 @@ export default function Home() {
         </div>
 
         {/* Create Quiz Section */}
-        <div className="flex-1 shadow-md rounded-xl p-6 transition-transform hover:scale-105 text-center border border-gray-300 hover:shadow-lg">
+        <div className="flex-1 shadow-md rounded-xl p-6 transition-transform hover:scale-105 text-center border border-gray-300 hover:shadow-lg bg-purple-50">
           <h5 className="text-xl font-semibold mb-4">Create a Quiz</h5>
           <p className="text-gray-600 mb-6">
             Upload questions and generate a quiz code.

@@ -5,13 +5,16 @@ export default function About() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] bg-gray-100 pt-20">
+    <div className="flex flex-col items-center justify-start min-h-[calc(100vh-80px)] bg-gray-100 pt-20">
       <div className="bg-white shadow-lg rounded-lg p-8 w-96 text-center border border-gray-300">
         <h2 className="text-3xl font-bold mb-4">About Our App</h2>
         <p className="text-gray-600 mb-6">
-          Our quiz platform helps you create and participate in interactive
-          quizzes with ease. Choose different question formats, set time limits,
-          and challenge your knowledge!
+          Welcome to our cutting-edge test platform, built for colleges,
+          educators, and students. Effortlessly create structured assessments,
+          monitor student performance, and gain real-time insights. Whether
+          you're an educator crafting exams or a student striving for
+          excellence, our platform makes testing smarter, faster, and more
+          effective.
         </p>
         <div className="flex flex-col gap-4">
           <button

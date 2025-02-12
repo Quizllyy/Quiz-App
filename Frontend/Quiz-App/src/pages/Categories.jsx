@@ -20,7 +20,7 @@ export default function QuizCategories() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] bg-gray-100 pt-20">
+    <div className="flex flex-col items-center justify-start min-h-[calc(100vh-80px)] bg-gray-100 pt-32">
       <div className="bg-white shadow-lg rounded-lg p-8 w-96 text-center border border-gray-300">
         <h2 className="text-2xl font-bold mb-4">Select Quiz Type</h2>
         {!selectedCategory ? (
