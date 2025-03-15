@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { signup } from "../services/api";
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -14,14 +15,29 @@ export default function SignIn() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
-    alert("Account created successfully!");
-    navigate("/home");
+
+    try {
+      const response = await signup({
+        name: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+        role: "student",
+      });
+
+      alert("Account created successfully!");
+      console.log(response.data);
+      navigate("/"); // ✅ Redirect to Home
+    } catch (error) {
+      console.error(error.response.data);
+      alert(error.response.data.message || "Signup Failed!");
+    }
   };
 
   return (
