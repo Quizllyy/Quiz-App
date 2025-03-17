@@ -5,27 +5,40 @@ export default function About() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-[calc(100vh-80px)] bg-gray-100 pt-20">
-      <div className="bg-white shadow-lg rounded-lg p-8 w-96 text-center border border-gray-300">
-        <h2 className="text-3xl font-bold mb-4">About Our App</h2>
-        <p className="text-gray-600 mb-6">
-          Welcome to our cutting-edge test platform, built for colleges,
-          educators, and students. Effortlessly create structured assessments,
-          monitor student performance, and gain real-time insights. Whether
-          you're an educator crafting exams or a student striving for
-          excellence, our platform makes testing smarter, faster, and more
-          effective.
-        </p>
-        <div className="flex flex-col gap-4">
+    <div className="flex flex-col justify-start items-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 pt-32">
+      {/* Heading Section */}
+      <h1 className="text-4xl font-extrabold text-gray-800 mb-6 text-center mt-4">
+        About Quizly
+      </h1>
+      <h3 className="text-xl font-bold text-gray-800 mb-8 text-center">
+        Empowering Education with Smart Assessments
+      </h3>
+
+      {/* Content Section */}
+      <div className="bg-white shadow-2xl rounded-2xl p-8 max-w-4xl w-full flex flex-col md:flex-row gap-8 border border-gray-300">
+        {/* Description Card */}
+        <div className="flex-1 shadow-md rounded-xl p-6 transition-transform hover:scale-105 text-center border border-gray-300 hover:shadow-lg bg-blue-50">
+          <h5 className="text-xl font-semibold mb-4">What We Offer</h5>
+          <p className="text-gray-600 mb-6">
+            We simplify online assessments for students & educators with an intuitive platform.
+          </p>
           <button
             className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
             onClick={() => navigate("/")}>
             Get Started
           </button>
+        </div>
+
+        {/* Learn More Card */}
+        <div className="flex-1 shadow-md rounded-xl p-6 transition-transform hover:scale-105 text-center border border-gray-300 hover:shadow-lg bg-purple-50">
+          <h5 className="text-xl font-semibold mb-4">Learn More</h5>
+          <p className="text-gray-600 mb-6">
+            Discover how our platform can transform learning with data-driven insights.
+          </p>
           <button
-            className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition"
+            className="w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700 transition"
             onClick={() => navigate("/details")}>
-            Learn More
+            Explore
           </button>
         </div>
       </div>

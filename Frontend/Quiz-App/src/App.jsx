@@ -8,6 +8,7 @@ import Contact from "./pages/Contact.jsx";
 import CaptchaPage from "./pages/CaptchaPage.jsx";
 import Categories from "./pages/Categories.jsx";
 import Details from "./pages/Details.jsx";
+import ThankYou from "./pages/ThankYou.jsx";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/signin" element={<Signin />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/thank-you" element={<ThankYou />} />
         </Routes>
       </div>
     </Router>
