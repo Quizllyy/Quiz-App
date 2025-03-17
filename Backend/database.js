@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 require("dotenv").config();
 console.log("MongoDB URI:", process.env.MONGO_URL);
 const mongoose = require("mongoose");
@@ -18,3 +19,12 @@ const connectDB = async () => {
 };
 
 module.exports = connectDB;
+=======
+require('dotenv').config();
+
+const connectDB = async () => {
+    console.log("MongoDB Connected Successfully");
+};
+
+module.exports = connectDB;
+>>>>>>> 527e05898e5c10a3e768b2b332af72a9b770da24
