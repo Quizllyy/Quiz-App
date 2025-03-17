@@ -9,6 +9,7 @@ export default function SignIn() {
     email: "",
     password: "",
     confirmPassword: "",
+    role: "student", // Default role is student
   });
 
   const handleChange = (e) => {
@@ -28,12 +29,12 @@ export default function SignIn() {
         name: formData.fullName,
         email: formData.email,
         password: formData.password,
-        role: "student",
+        role: formData.role,
       });
 
       alert("Account created successfully!");
       console.log(response.data);
-      navigate("/"); // ✅ Redirect to Home
+      navigate("/"); // Redirect to Home
     } catch (error) {
       console.error(error.response.data);
       alert(error.response.data.message || "Signup Failed!");
@@ -81,6 +82,19 @@ export default function SignIn() {
             onChange={handleChange}
             required
           />
+          <select
+            name="role"
+            className="p-2 border rounded-md w-full"
+            value={formData.role}
+            onChange={handleChange}
+            required>
+            <option value="" disabled>
+              Select Role
+            </option>
+            <option value="student">Student</option>
+            <option value="admin">Admin</option>
+          </select>
+
           <button
             type="submit"
             className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
