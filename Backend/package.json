@@ -18,13 +18,9 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-<<<<<<< HEAD
     "mongoose": "^8.12.1"
   },
   "devDependencies": {
-=======
-    "mongoose": "^8.9.5",
->>>>>>> 527e05898e5c10a3e768b2b332af72a9b770da24
     "nodemon": "^3.1.9"
   }
 }
