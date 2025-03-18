@@ -1,113 +1,90 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signup } from "../services/api";
 
 export default function SignIn() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    fullName: "",
     email: "",
     password: "",
-    confirmPassword: "",
-    role: "student",
+    remember: false,
   });
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-
-    try {
-      const response = await signup({
-        name: formData.fullName,
-        email: formData.email,
-        password: formData.password,
-        role: formData.role,
-      });
-
-      alert("Account created successfully!");
-      console.log(response.data);
-      navigate("/");
-    } catch (error) {
-      console.error(error.response.data);
-      alert(error.response.data.message || "Signup Failed!");
-    }
+    console.log("Sign In Data:", formData);
+    alert("Sign-in successful!");
+    navigate("/");
   };
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-[calc(100vh-80px)] bg-gray-100 pt-20">
-      <div className="bg-white shadow-lg rounded-lg p-8 w-96 text-center border border-gray-300">
-        <h2 className="text-2xl font-bold mb-4">Sign In</h2>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <input
-            type="text"
-            name="fullName"
-            placeholder="Full Name"
-            className="p-2 border rounded-md w-full"
-            value={formData.fullName}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            className="p-2 border rounded-md w-full"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            className="p-2 border rounded-md w-full"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="password"
-            name="confirmPassword"
-            placeholder="Confirm Password"
-            className="p-2 border rounded-md w-full"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            required
-          />
-          <select
-            name="role"
-            className="p-2 border rounded-md w-full"
-            value={formData.role}
-            onChange={handleChange}
-            required>
-            <option value="" disabled>
-              Select Role
-            </option>
-            <option value="student">Student</option>
-            <option value="admin">Admin</option>
-          </select>
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 px-6">
+      <div className="bg-white shadow-xl rounded-2xl p-8 max-w-md w-full border border-gray-300">
+        <h1 className="text-3xl font-extrabold text-gray-800 text-center mb-6">
+          Sign In
+        </h1>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-gray-700 font-semibold mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-semibold mb-1">
+              Password
+            </label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          <div className="flex justify-between items-center text-sm">
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                name="remember"
+                checked={formData.remember}
+                onChange={handleChange}
+                className="mr-2"
+              />
+              Remember Me
+            </label>
+            <a href="#" className="text-blue-600 hover:underline">
+              Forgot Password?
+            </a>
+          </div>
 
           <button
             type="submit"
-            className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
+            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition font-semibold">
             Sign In
           </button>
         </form>
-        <p className="text-gray-600 mt-4">
-          Already have an account?{" "}
-          <span
-            className="text-blue-600 cursor-pointer hover:underline"
-            onClick={() => navigate("/login")}>
-            Log In
-          </span>
+
+        <p className="text-gray-700 mt-4 text-center">
+          Don't have an account?{" "}
+          <a href="/signup" className="text-blue-600 hover:underline">
+            Sign Up
+          </a>
         </p>
       </div>
     </div>

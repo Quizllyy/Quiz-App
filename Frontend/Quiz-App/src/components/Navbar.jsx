@@ -18,28 +18,28 @@ export default function Navbar() {
         <div className="hidden md:flex space-x-6">
           <Link
             to="/"
-            className="text-white hover:text-gray-200 transition duration-300 font-medium">
+            className="text-white hover:text-gray-200 transition font-medium">
             Home
           </Link>
           <Link
             to="/about"
-            className="text-white hover:text-gray-200 transition duration-300 font-medium">
-            About
+            className="text-white hover:text-gray-200 transition font-medium">
+            About Us
           </Link>
           <Link
             to="/contact"
-            className="text-white hover:text-gray-200 transition duration-300 font-medium">
-            Contact
+            className="text-white hover:text-gray-200 transition font-medium">
+            Contact Us
           </Link>
           <Link
             to="/signin"
-            className="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg font-semibold transition duration-300">
+            className="text-white hover:text-gray-200 transition font-medium">
             Sign In
           </Link>
           <Link
             to="/login"
-            className="flex items-center gap-2 hover:text-gray-300 transition duration-300">
-            <FaUser /> Login
+            className="text-white hover:text-gray-200 transition font-medium">
+            Login
           </Link>
         </div>
 
@@ -58,33 +58,33 @@ export default function Navbar() {
         <div className="md:hidden bg-blue-500 p-4 space-y-3 shadow-lg">
           <Link
             to="/"
-            className="block text-white hover:text-gray-200 transition duration-300 font-medium"
+            className="block text-white hover:text-gray-200 transition font-medium"
             onClick={() => setIsOpen(false)}>
             Home
           </Link>
           <Link
             to="/about"
-            className="block text-white hover:text-gray-200 transition duration-300 font-medium"
+            className="block text-white hover:text-gray-200 transition font-medium"
             onClick={() => setIsOpen(false)}>
-            About
+            About Us
           </Link>
           <Link
             to="/contact"
-            className="block text-white hover:text-gray-200 transition duration-300 font-medium"
+            className="block text-white hover:text-gray-200 transition font-medium"
             onClick={() => setIsOpen(false)}>
-            Contact
+            Contact Us
           </Link>
           <Link
             to="/signin"
-            className="block bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg font-semibold transition duration-300 text-center"
+            className="block text-white hover:text-gray-200 transition font-medium"
             onClick={() => setIsOpen(false)}>
             Sign In
           </Link>
           <Link
             to="/login"
-            className="block flex items-center gap-2 hover:text-gray-300 transition duration-300 text-center"
+            className="block text-white hover:text-gray-200 transition font-medium"
             onClick={() => setIsOpen(false)}>
-            <FaUser /> Login
+            Login
           </Link>
         </div>
       )}

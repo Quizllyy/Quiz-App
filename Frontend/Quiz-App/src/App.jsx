@@ -12,6 +12,7 @@ import ManualQuizEntry from "./pages/ManualEntryForm.jsx";
 import UploadQuizExcel from "./pages/UploadQuizExcel.jsx";
 import Footer from "./components/Footer.jsx";
 import ManualQuestionEntry from "./pages/ManualQuestionEntry.jsx";
+import ReviewQuiz from "./pages/ReviewQuiz.jsx";
 
 function App() {
   return (
@@ -25,13 +26,13 @@ function App() {
           <Route path="/create-quiz" element={<Categories />} />
           <Route path="/manual-entry" element={<ManualQuizEntry />} />
           <Route path="/create-questions" element={<ManualQuestionEntry />} />
+          <Route path="/review-quiz" element={<ReviewQuiz />} />
           <Route path="/excel-upload" element={<UploadQuizExcel />}></Route>
           <Route path="/details" element={<Details />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signin" element={<Signin />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/thank-you" element={<ThankYou />} />
         </Routes>
       </div>
       {/* <Footer /> */}

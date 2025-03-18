@@ -5,9 +5,11 @@ export default function Details() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-[calc(100vh-80px)] bg-gray-100 pt-32">
+    <div className="flex flex-col items-center justify-start min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 pt-32">
       <div className="bg-white shadow-lg rounded-lg p-8 w-96 text-center border border-gray-300">
-        <h2 className="text-3xl font-bold mb-4">More About Our Platform</h2>
+        <h2 className="text-3xl font-bold text-gray-800 mb-4">
+          More About Our Platform
+        </h2>
         <p className="text-gray-600 mb-6">
           Our quiz platform offers a variety of question types, real-time
           scoring, and a seamless user experience. Whether you're an educator,
