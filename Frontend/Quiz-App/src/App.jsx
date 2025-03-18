@@ -8,7 +8,10 @@ import Contact from "./pages/Contact.jsx";
 import CaptchaPage from "./pages/CaptchaPage.jsx";
 import Categories from "./pages/Categories.jsx";
 import Details from "./pages/Details.jsx";
-import ThankYou from "./pages/ThankYou.jsx";
+import ManualQuizEntry from "./pages/ManualEntryForm.jsx";
+import UploadQuizExcel from "./pages/UploadQuizExcel.jsx";
+import Footer from "./components/Footer.jsx";
+import ManualQuestionEntry from "./pages/ManualQuestionEntry.jsx";
 
 function App() {
   return (
@@ -20,6 +23,9 @@ function App() {
           <Route path="/verify-captcha" element={<CaptchaPage />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/create-quiz" element={<Categories />} />
+          <Route path="/manual-entry" element={<ManualQuizEntry />} />
+          <Route path="/create-questions" element={<ManualQuestionEntry />} />
+          <Route path="/excel-upload" element={<UploadQuizExcel />}></Route>
           <Route path="/details" element={<Details />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signin" element={<Signin />} />
@@ -28,6 +34,7 @@ function App() {
           <Route path="/thank-you" element={<ThankYou />} />
         </Routes>
       </div>
+      {/* <Footer /> */}
     </Router>
   );
 }
