@@ -1,11 +1,12 @@
 import { useState } from "react";
 
 export default function ContactUs() {
+  const web3ApiKey = process.env.REACT_APP_WEB3_API_KEY;
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     message: "",
-    access_key: "877f5110-13db-4bf0-a096-691361da717e",
+    access_key: web3ApiKey,
   });
 
   const [status, setStatus] = useState({ success: false, message: "" });
