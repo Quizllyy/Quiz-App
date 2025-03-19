@@ -90,7 +90,8 @@ export default function ManualQuestionEntry() {
       );
       console.log("✅ Response from backend:", response.data);
       alert(response.data.message);
-      navigate(`/review-quiz/${createdQuizId}`);
+      // Instead of extracting createdQuizId from response, use the quizId from URL
+      navigate(`/review-quiz/${quizId}`);
     } catch (error) {
       console.error(
         "❌ Error saving questions:",

@@ -19,17 +19,10 @@ export default function ManualQuizEntry() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (
-      !quizDetails.title ||
-      !quizDetails.numQuestions ||
-      !quizDetails.timeLimit ||
-      !quizDetails.secretCode
-    ) {
-      setError("All fields are required!");
-      return;
-    }
-
-    setError("");
+    // Log the payload before sending
+    const payload = { quizDetails };
+    console.log("🚀 Sending request to backend...");
+    console.log("Request payload:", JSON.stringify(quizDetails, null, 2));
 
     try {
       const response = await axios.post(
@@ -37,28 +30,23 @@ export default function ManualQuizEntry() {
         quizDetails
       );
 
-      // Log the complete response for debugging
-      console.log("Response from quiz creation API:", response.data);
-
-      // Make sure the response contains the quiz with an _id
-      if (!response.data.quiz || !response.data.quiz._id) {
-        console.error("Quiz ID not found in response:", response.data);
-        alert("Quiz creation failed: Quiz ID missing.");
-        return;
-      }
-
+      console.log("✅ Response from backend:", response.data);
       alert(response.data.message);
+
+      // Extract the quiz ID from the response
       const createdQuizId = response.data.quiz._id;
       console.log("🎯 Created quiz ID:", createdQuizId);
 
-      // Navigate to the question entry page with the created quiz ID using template literals (backticks)
+      // Use template literals with backticks to navigate with the actual ID
       navigate(`/create-questions/${createdQuizId}`);
     } catch (error) {
       console.error(
-        "Error saving quiz:",
+        "❌ Error saving quiz:",
         error.response?.data || error.message
       );
-      setError("Failed to save quiz. Try again later.");
+      alert(
+        error.response?.data?.message || "Failed to save quiz. Try again later."
+      );
     }
   };
 
