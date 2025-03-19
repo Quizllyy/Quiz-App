@@ -25,9 +25,12 @@ function App() {
           <Route path="/categories" element={<Categories />} />
           <Route path="/create-quiz" element={<Categories />} />
           <Route path="/manual-entry" element={<ManualQuizEntry />} />
-          <Route path="/create-questions" element={<ManualQuestionEntry />} />
-          <Route path="/review-quiz" element={<ReviewQuiz />} />
-          <Route path="/excel-upload" element={<UploadQuizExcel />}></Route>
+          <Route
+            path="/create-questions/:quizId"
+            element={<ManualQuestionEntry />}
+          />
+          <Route path="/review-quiz/:quizId" element={<ReviewQuiz />} />
+          <Route path="/excel-upload" element={<UploadQuizExcel />} />
           <Route path="/details" element={<Details />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signin" element={<Signin />} />

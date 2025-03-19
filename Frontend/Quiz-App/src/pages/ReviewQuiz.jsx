@@ -1,82 +1,117 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function ReviewQuiz() {
+  const { quizId } = useParams();
   const navigate = useNavigate();
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // Sample questions for review (Replace this with actual data)
-  const quizData = [
-    {
-      text: "What is the capital of France?",
-      options: ["Paris", "London", "Berlin", "Rome"],
-      correctAnswers: [0], // Index of correct option(s)
-      type: "single",
-    },
-    {
-      text: "Select the prime numbers",
-      options: ["2", "3", "4", "5"],
-      correctAnswers: [0, 1, 3], // Multiple correct answers
-      type: "multiple",
-    },
-    {
-      text: "Who wrote 'Hamlet'?",
-      options: [],
-      correctAnswers: ["William Shakespeare"],
-      type: "write",
-    },
-  ];
+  useEffect(() => {
+    async function fetchQuestions() {
+      try {
+        if (!quizId) return;
+        const response = await axios.get(
+          `http://localhost:8080/api/questions/${quizId}`
+        );
+        setQuestions(response.data);
+      } catch (err) {
+        console.error(
+          "Error fetching questions:",
+          err.response?.data || err.message
+        );
+        setError("Failed to load questions.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchQuestions();
+  }, [quizId]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200">
+        <h2 className="text-2xl font-bold">Loading...</h2>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200">
+        <h2 className="text-2xl font-bold text-red-500">{error}</h2>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 pt-20 px-4">
-      <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-2xl text-center border border-gray-300">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">
+    <div className="flex flex-col items-center justify-start min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 p-6">
+      <div className="w-full max-w-4xl bg-white shadow-lg rounded-xl p-8">
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           Review Your Quiz
         </h2>
-        <p className="text-gray-600 mb-4">
+        <p className="text-gray-600 mb-6 text-center">
           Check your questions before finalizing the quiz.
         </p>
-
-        <div className="flex flex-col gap-6">
-          {quizData.map((q, index) => (
-            <div
-              key={index}
-              className="text-left border p-4 rounded-lg bg-gray-50">
-              <h3 className="text-lg font-semibold text-gray-800">{`Q${
-                index + 1
-              }: ${q.text}`}</h3>
-
-              {q.type !== "write" ? (
-                <ul className="mt-2">
-                  {q.options.map((option, oIndex) => (
-                    <li
-                      key={oIndex}
-                      className={`p-2 rounded-md ${
-                        q.correctAnswers.includes(oIndex)
-                          ? "bg-green-100 border-l-4 border-green-500"
-                          : "bg-gray-100"
-                      }`}>
-                      {option}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="mt-2 p-2 bg-green-100 border-l-4 border-green-500 rounded-md">
-                  Correct Answer: <strong>{q.correctAnswers[0]}</strong>
-                </p>
-              )}
-            </div>
-          ))}
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-separate border-spacing-2">
+            <thead>
+              <tr className="bg-blue-50">
+                <th className="px-6 py-3 text-left border rounded-t-md">
+                  Question
+                </th>
+                <th className="px-6 py-3 text-left border rounded-t-md">
+                  Option A
+                </th>
+                <th className="px-6 py-3 text-left border rounded-t-md">
+                  Option B
+                </th>
+                <th className="px-6 py-3 text-left border rounded-t-md">
+                  Option C
+                </th>
+                <th className="px-6 py-3 text-left border rounded-t-md">
+                  Option D
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {questions.map((q, idx) => (
+                <tr key={idx} className="hover:bg-gray-50">
+                  <td className="px-6 py-3 border font-semibold">{q.text}</td>
+                  {q.type !== "write" ? (
+                    q.options.map((option, oIdx) => (
+                      <td
+                        key={oIdx}
+                        className={`px-6 py-3 border ${
+                          q.correctAnswers.includes(oIdx)
+                            ? "bg-green-100"
+                            : "bg-white"
+                        }`}>
+                        {option}
+                      </td>
+                    ))
+                  ) : (
+                    <td colSpan="4" className="px-6 py-3 border bg-green-100">
+                      <strong>{q.correctAnswers[0]}</strong>
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-
-        <div className="flex justify-between mt-6">
+        <div className="flex justify-between mt-8">
           <button
             onClick={() => navigate(-1)}
-            className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition font-semibold">
+            className="bg-gray-500 text-white px-6 py-3 rounded-md hover:bg-gray-600 transition font-semibold">
             Edit Quiz
           </button>
           <button
             onClick={() => alert("Quiz finalized successfully!")}
-            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition font-semibold">
+            className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition font-semibold">
             Finalize Quiz
           </button>
         </div>

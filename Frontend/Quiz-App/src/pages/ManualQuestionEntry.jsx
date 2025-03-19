@@ -1,8 +1,19 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function ManualQuestionEntry() {
   const navigate = useNavigate();
+  // Extract quizId from URL
+  const { quizId } = useParams();
+  console.log("🎯 Retrieved quizId from useParams:", quizId);
+
+  if (!quizId) {
+    console.error(
+      "❌ ERROR: quizId is undefined! Check your route. The URL should include a valid quiz ID."
+    );
+  }
+
   const [questions, setQuestions] = useState([
     { text: "", options: ["", "", "", ""], correctAnswers: [], type: "single" },
   ]);
@@ -56,11 +67,40 @@ export default function ManualQuestionEntry() {
     ]);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitted Questions:", questions);
-    alert("Questions saved successfully!");
-    navigate("/review-quiz");
+
+    const payload = { quizId, questions };
+    console.log("🚀 Sending request to backend...");
+    console.log("Request payload:", JSON.stringify(payload, null, 2));
+
+    // Validate quizId before sending
+    if (!quizId || quizId.includes("${")) {
+      console.error("❌ quizId is invalid:", quizId);
+      alert(
+        "Quiz ID is not set properly! Please navigate with a valid quiz ID in the URL."
+      );
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/questions/create",
+        payload
+      );
+      console.log("✅ Response from backend:", response.data);
+      alert(response.data.message);
+      navigate(`/review-quiz/${createdQuizId}`);
+    } catch (error) {
+      console.error(
+        "❌ Error saving questions:",
+        error.response?.data || error.message
+      );
+      alert(
+        error.response?.data?.message ||
+          "Failed to save questions. Try again later."
+      );
+    }
   };
 
   return (
@@ -141,21 +181,6 @@ export default function ManualQuestionEntry() {
                       )}
                     </div>
                   ))}
-                </>
-              )}
-              {q.type === "write" && (
-                <>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Correct Answer
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full p-2 border rounded-md mb-2 focus:ring-2 focus:ring-blue-500 transition"
-                    value={q.correctAnswers[0] || ""}
-                    onChange={(e) => handleCorrectAnswerChange(qIndex, 0, true)}
-                    placeholder="Enter the correct answer"
-                    required
-                  />
                 </>
               )}
             </div>

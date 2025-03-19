@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 export default function ManualQuizEntry() {
@@ -15,10 +16,9 @@ export default function ManualQuizEntry() {
     setQuizDetails({ ...quizDetails, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Simple validation check
     if (
       !quizDetails.title ||
       !quizDetails.numQuestions ||
@@ -30,9 +30,36 @@ export default function ManualQuizEntry() {
     }
 
     setError("");
-    console.log("Quiz Details:", quizDetails);
-    alert("Quiz Details Saved! Proceed to question entry.");
-    navigate("/create-questions");
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/quiz/create",
+        quizDetails
+      );
+
+      // Log the complete response for debugging
+      console.log("Response from quiz creation API:", response.data);
+
+      // Make sure the response contains the quiz with an _id
+      if (!response.data.quiz || !response.data.quiz._id) {
+        console.error("Quiz ID not found in response:", response.data);
+        alert("Quiz creation failed: Quiz ID missing.");
+        return;
+      }
+
+      alert(response.data.message);
+      const createdQuizId = response.data.quiz._id;
+      console.log("🎯 Created quiz ID:", createdQuizId);
+
+      // Navigate to the question entry page with the created quiz ID using template literals (backticks)
+      navigate(`/create-questions/${createdQuizId}`);
+    } catch (error) {
+      console.error(
+        "Error saving quiz:",
+        error.response?.data || error.message
+      );
+      setError("Failed to save quiz. Try again later.");
+    }
   };
 
   return (

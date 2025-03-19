@@ -25,7 +25,7 @@ export default function CaptchaPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-gray-200 to-gray-400 px-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 px-4">
       <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-md text-center border border-gray-300">
         <h2 className="text-2xl font-bold mb-4 text-gray-800">
           Enter Verification Code
