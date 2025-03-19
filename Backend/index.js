@@ -14,6 +14,13 @@ app.use(cors());
 const authRoutes = require("./routes/auth");
 app.use("/api/auth", authRoutes);
 
+const quizRoutes = require("./routes/quiz");
+app.use("/api/quiz", quizRoutes);
+
+const questionRoutes = require("./routes/questions");
+app.use("/api/questions", questionRoutes);
+
+
 app.get("/", (req, res) => {
     res.send("Quiz App Backend is Running");
 });
