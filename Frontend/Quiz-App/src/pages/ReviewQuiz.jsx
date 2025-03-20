@@ -16,7 +16,12 @@ export default function ReviewQuiz() {
         const response = await axios.get(
           `http://localhost:8080/api/questions/${quizId}`
         );
-        setQuestions(response.data);
+
+        if (response.data?.questions) {
+          setQuestions(response.data.questions);
+        } else {
+          throw new Error("Invalid response structure");
+        }
       } catch (err) {
         console.error(
           "Error fetching questions:",
@@ -82,7 +87,7 @@ export default function ReviewQuiz() {
               </tr>
             </thead>
             <tbody>
-              {questions.map((q, idx) => (
+              {(questions || []).map((q, idx) => (
                 <tr key={idx} className="hover:bg-gray-50">
                   <td className="px-6 py-3 border font-semibold">{q.text}</td>
                   {q.type !== "write" ? (
@@ -90,7 +95,7 @@ export default function ReviewQuiz() {
                       <td
                         key={oIdx}
                         className={`px-6 py-3 border ${
-                          q.correctAnswers.includes(oIdx)
+                          q.correctAnswers.includes(parseInt(oIdx, 10))
                             ? "bg-green-100"
                             : "bg-white"
                         }`}>
