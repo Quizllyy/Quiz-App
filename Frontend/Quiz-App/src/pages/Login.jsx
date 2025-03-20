@@ -22,7 +22,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-gray-100 to-gray-300 px-6">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 px-6">
       <div className="bg-white shadow-xl rounded-2xl p-8 max-w-md w-full border border-gray-300">
         <h1 className="text-3xl font-extrabold text-gray-800 text-center mb-6">
           Login
@@ -82,7 +82,7 @@ export default function Login() {
 
         <p className="text-gray-700 mt-4 text-center">
           Don't have an account?{" "}
-          <a href="/signup" className="text-blue-600 hover:underline">
+          <a href="/signin" className="text-blue-600 hover:underline">
             Sign Up
           </a>
         </p>

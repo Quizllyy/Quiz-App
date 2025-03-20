@@ -31,6 +31,10 @@ export default function ReviewQuiz() {
     fetchQuestions();
   }, [quizId]);
 
+  const handleEditQuiz = () => {
+    navigate(`/edit-quiz/${quizId}`, { state: { questions } });
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200">
@@ -105,12 +109,12 @@ export default function ReviewQuiz() {
         </div>
         <div className="flex justify-between mt-8">
           <button
-            onClick={() => navigate(-1)}
+            onClick={handleEditQuiz}
             className="bg-gray-500 text-white px-6 py-3 rounded-md hover:bg-gray-600 transition font-semibold">
             Edit Quiz
           </button>
           <button
-            onClick={() => alert("Quiz finalized successfully!")}
+            onClick={() => navigate(`/finalize-quiz/${quizId}`)}
             className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition font-semibold">
             Finalize Quiz
           </button>

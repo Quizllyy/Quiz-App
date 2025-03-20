@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -12,6 +12,27 @@ export default function ManualQuizEntry() {
   });
   const [error, setError] = useState("");
 
+  // Function to generate a random alphanumeric string
+  function generateSecretCode(length = 8) {
+    const charset =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let secretCode = "";
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * charset.length);
+      secretCode += charset[randomIndex];
+    }
+    return secretCode;
+  }
+
+  // Generate and set the secret code when the component mounts
+  useEffect(() => {
+    const newSecretCode = generateSecretCode();
+    setQuizDetails((prevDetails) => ({
+      ...prevDetails,
+      secretCode: newSecretCode,
+    }));
+  }, []);
+
   const handleChange = (e) => {
     setQuizDetails({ ...quizDetails, [e.target.name]: e.target.value });
   };
@@ -19,29 +40,20 @@ export default function ManualQuizEntry() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Log the payload before sending
-    const payload = { quizDetails };
-    console.log("🚀 Sending request to backend...");
-    console.log("Request payload:", JSON.stringify(quizDetails, null, 2));
-
     try {
       const response = await axios.post(
         "http://localhost:8080/api/quiz/create",
         quizDetails
       );
 
-      console.log("✅ Response from backend:", response.data);
       alert(response.data.message);
 
-      // Extract the quiz ID from the response
       const createdQuizId = response.data.quiz._id;
-      console.log("🎯 Created quiz ID:", createdQuizId);
 
-      // Use template literals with backticks to navigate with the actual ID
       navigate(`/create-questions/${createdQuizId}`);
     } catch (error) {
       console.error(
-        "❌ Error saving quiz:",
+        "Error saving quiz:",
         error.response?.data || error.message
       );
       alert(
@@ -86,15 +98,6 @@ export default function ManualQuizEntry() {
             min="1"
             className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-blue-500 transition"
             value={quizDetails.timeLimit}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="text"
-            name="secretCode"
-            placeholder="Enter Secret Captcha"
-            className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-blue-500 transition"
-            value={quizDetails.secretCode}
             onChange={handleChange}
             required
           />

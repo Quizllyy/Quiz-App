@@ -1,12 +1,11 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 export default function ContactUs() {
-  const web3ApiKey = process.env.REACT_APP_WEB3_API_KEY;
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     message: "",
-    access_key: web3ApiKey,
+    access_key: process.env.REACT_APP_WEB3_API_KEY,
   });
 
   const [status, setStatus] = useState({ success: false, message: "" });
@@ -35,7 +34,7 @@ export default function ContactUs() {
         name: "",
         email: "",
         message: "",
-        access_key: "YOUR_WEB3FORMS_ACCESS_KEY",
+        access_key: process.env.REACT_APP_WEB3_API_KEY,
       });
     } else {
       setStatus({
@@ -46,7 +45,7 @@ export default function ContactUs() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 px-6 pt-8">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 px-6 pt-28">
       <h1 className="text-4xl font-extrabold text-gray-800 mb-6">Contact Us</h1>
       <p className="text-gray-700 mb-8 text-center max-w-lg">
         Have any questions or feedback? Fill out the form below, and we'll get
@@ -66,12 +65,6 @@ export default function ContactUs() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="hidden"
-            name="access_key"
-            value="YOUR_WEB3FORMS_ACCESS_KEY"
-          />
-
           <div>
             <label className="block text-gray-700 font-semibold mb-1">
               Name

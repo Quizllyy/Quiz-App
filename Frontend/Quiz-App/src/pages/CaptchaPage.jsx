@@ -1,26 +1,29 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-export default function CaptchaPage() {
+const CaptchaPage = () => {
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    document.getElementById("captchaInput")?.focus();
-  }, []);
-
-  const handleSubmit = () => {
-    if (code.trim() === "123456") {
-      navigate("/quiz"); // Redirect after successful verification
-    } else {
-      setError("Invalid code. Please try again.");
-    }
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      handleSubmit();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/verify-secret-code",
+        {
+          secretCode: code.trim(),
+        }
+      );
+      if (response.data.valid) {
+        navigate(`/quiz/${response.data.quizId}`);
+      } else {
+        setError("Invalid code. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error verifying secret code:", error);
+      setError("An error occurred. Please try again later.");
     }
   };
 
@@ -33,25 +36,25 @@ export default function CaptchaPage() {
         <p className="text-gray-600 mb-6">
           Please enter the code provided to access the quiz.
         </p>
-
-        <input
-          id="captchaInput"
-          type="text"
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Enter Code"
-          className="border border-gray-300 rounded-md p-3 w-full text-center focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-        />
-
-        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-
-        <button
-          className="w-full bg-blue-600 text-white py-2 mt-4 rounded-md hover:bg-blue-700 transition font-semibold"
-          onClick={handleSubmit}>
-          Verify & Continue
-        </button>
+        <form onSubmit={handleSubmit}>
+          <input
+            id="captchaInput"
+            type="text"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            placeholder="Enter Code"
+            className="border border-gray-300 rounded-md p-3 w-full text-center focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          />
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 mt-4 rounded-md hover:bg-blue-700 transition font-semibold">
+            Verify & Continue
+          </button>
+        </form>
       </div>
     </div>
   );
-}
+};
+
+export default CaptchaPage;
