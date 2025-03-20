@@ -11,11 +11,10 @@ const CaptchaPage = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/verify-secret-code",
-        {
-          secretCode: code.trim(),
-        }
+        "http://localhost:8080/api/quiz/verify-secret-code",
+        { secretCode: code.trim() }
       );
+
       if (response.data.valid) {
         navigate(`/quiz/${response.data.quizId}`);
       } else {

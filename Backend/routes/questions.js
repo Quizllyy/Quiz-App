@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const Question = require("../models/questions"); // Make sure the file path and name are correct
+const Question = require("../models/questions");
 
 const router = express.Router();
 
