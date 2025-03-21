@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./database.js");
+const quizExcelRoutes = require("./routes/quizExcelRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -22,9 +23,11 @@ const questionRoutes = require("./routes/questions");
 app.use("/api/questions", questionRoutes);
 
 app.get("/", (req, res) => {
-    res.send("Quiz App Backend is Running");
+  res.send("Quiz App Backend is Running");
 });
 
+app.use("/api/excel", quizExcelRoutes); // Use Excel quiz routes
+
 app.listen(PORT, () => {
-    console.log(`Server running at: http://localhost:${PORT}`);
+  console.log(`Server running at: http://localhost:${PORT}`);
 });

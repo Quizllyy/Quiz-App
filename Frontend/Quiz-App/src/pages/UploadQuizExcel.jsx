@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import * as XLSX from "xlsx"; // Import SheetJS for Excel parsing
 
 export default function UploadQuizExcel() {
   const navigate = useNavigate();
@@ -35,15 +36,37 @@ export default function UploadQuizExcel() {
     setFile(null);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file) {
       alert("Please upload an Excel file before proceeding.");
       return;
     }
-    console.log("Uploaded File:", file);
-    alert("File uploaded successfully! Proceeding to review questions.");
-    navigate("/review-questions");
+
+    // Read and parse Excel file
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const data = new Uint8Array(event.target.result);
+      const workbook = XLSX.read(data, { type: "array" });
+
+      // Get first sheet name and parse it into JSON
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const jsonData = XLSX.utils.sheet_to_json(sheet);
+
+      if (jsonData.length === 0) {
+        alert("No data found in the uploaded file!");
+        return;
+      }
+
+      // Store parsed data in localStorage
+      localStorage.setItem("quizData", JSON.stringify(jsonData));
+
+      alert("File uploaded successfully! Proceeding to review questions.");
+      navigate("/review-questions");
+    };
+
+    reader.readAsArrayBuffer(file);
   };
 
   return (
@@ -56,7 +79,6 @@ export default function UploadQuizExcel() {
           Upload an Excel file (.xlsx, .xls) containing your quiz questions.
         </p>
 
-        {/* Drag & Drop Area */}
         <div
           className={`border-2 border-dashed ${
             dragging ? "border-blue-500 bg-blue-50" : "border-gray-300"
@@ -80,7 +102,6 @@ export default function UploadQuizExcel() {
           </label>
         </div>
 
-        {/* File Preview */}
         {file && (
           <div className="mt-4 bg-gray-100 p-4 rounded-lg flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -90,7 +111,6 @@ export default function UploadQuizExcel() {
           </div>
         )}
 
-        {/* Submit Button */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-6">
           <button
             type="submit"
