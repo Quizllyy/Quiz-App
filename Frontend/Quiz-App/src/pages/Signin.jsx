@@ -1,11 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"; // Import useAuth
 
 export default function SignIn() {
   const navigate = useNavigate();
+  const { signIn } = useAuth(); // Get signIn function from AuthContext
+
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
     password: "",
+    role: "student", // Default value
     remember: false,
   });
 
@@ -17,26 +22,32 @@ export default function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8080/api/auth/signup", {
+      const response = await fetch("http://localhost:8080/api/auth/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
   
       const data = await response.json();
+  
       if (response.ok) {
+        sessionStorage.setItem("token", data.token);
+        sessionStorage.setItem("user", JSON.stringify(data.user)); // ✅ Store user details
+  
+        if (data.user) {
+          signIn(data.user); // ✅ Update AuthContext state
+        }
+  
         alert("Sign-in successful!");
         navigate("/");
       } else {
-        alert(data.message || "Signup failed");
+        alert(data.message || "Sign-in failed");
       }
     } catch (error) {
       console.error("Error during sign-in:", error);
     }
   };
   
-
-
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 px-6">
       <div className="bg-white shadow-xl rounded-2xl p-8 max-w-md w-full border border-gray-300">
@@ -45,12 +56,12 @@ export default function SignIn() {
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
+          <div>
             <label className="block text-gray-700 font-semibold mb-1">
               Enter your full name
             </label>
             <input
-              type="name"
+              type="text"
               name="name"
               value={formData.name}
               onChange={handleChange}
@@ -121,7 +132,8 @@ export default function SignIn() {
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition font-semibold">
+            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition font-semibold"
+          >
             Sign In
           </button>
         </form>

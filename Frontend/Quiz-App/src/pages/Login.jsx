@@ -16,7 +16,6 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login Data:", formData);
 
     try {
         const response = await fetch("http://localhost:8080/api/auth/login", {
@@ -27,24 +26,19 @@ export default function Login() {
 
         const data = await response.json();
         if (response.ok) {
-            localStorage.setItem("token", data.token);
+            sessionStorage.setItem("token", data.token); // Store token in session
             if (data.user) {
-                localStorage.setItem("user", JSON.stringify(data.user)); // ✅ Store user object
-            } else {
-                console.warn("No user data received from server.");
+                sessionStorage.setItem("user", JSON.stringify(data.user)); // Store user in session
             }
             alert("Login successful!");
             navigate("/");
         } else {
-            console.error("Login Error:", data.message);
             alert(data.message);
         }
     } catch (error) {
         console.error("Login Error:", error);
     }
-};
-
-
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 px-6">

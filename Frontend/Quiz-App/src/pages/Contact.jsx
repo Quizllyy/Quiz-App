@@ -3,14 +3,14 @@ import { useNavigate } from "react-router-dom";
 
 export default function ContactUs() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user")); // Check if user is logged in
+  const user = JSON.parse(sessionStorage.getItem("user"));// Check if user is logged in
 
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
+    name: user?.name || "",
+    email: user?.email || "",
     message: "",
-    access_key: process.env.REACT_APP_WEB3_API_KEY,
-  });
+    // access_key: process.env.REACT_APP_WEB3_API_KEY,
+  });  
 
   const [status, setStatus] = useState({ success: false, message: "" });
   const [loading, setLoading] = useState(false);
@@ -22,7 +22,7 @@ export default function ContactUs() {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    if (!user || !user.token) { 
+    if (!user) { 
       alert("You must be signed in to send a message.");
       navigate("/signin");
       return;
@@ -31,10 +31,9 @@ export default function ContactUs() {
   
     const formDataWithKey = {
       ...formData,
-      access_key: process.env.REACT_APP_WEB3_API_KEY, // web3form API key
+      access_key: process.env.REACT_APP_WEB3_API_KEY,
+      honeypot: "",  // Add an empty hidden field
     };
-  
-    console.log("Submitting Form Data:", formDataWithKey); // Debugging
   
     try {
       const response = await fetch("https://api.web3forms.com/submit", {
@@ -92,14 +91,13 @@ export default function ContactUs() {
             <label className="block text-gray-700 font-semibold mb-1">
               Name
             </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                className="w-full px-4 py-2 border rounded-md bg-gray-100 cursor-not-allowed"
+                readOnly
+              />
           </div>
 
           <div>
@@ -110,9 +108,8 @@ export default function ContactUs() {
               type="email"
               name="email"
               value={formData.email}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
+              className="w-full px-4 py-2 border rounded-md bg-gray-100 cursor-not-allowed"
+              readOnly
             />
           </div>
 

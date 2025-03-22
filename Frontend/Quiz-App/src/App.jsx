@@ -16,36 +16,41 @@ import ReviewQuiz from "./pages/ReviewQuiz.jsx";
 import EditQuiz from "./pages/EditQuiz";
 import FinalizeQuiz from "./pages/FinalizeQuiz.jsx";
 import Quiz from "./pages/Quiz.jsx";
+import Profile from "./pages/profile.jsx";
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   return (
-    <Router>
-      <Navbar />
-      <div>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/verify-captcha" element={<CaptchaPage />} />
-          <Route path="/categories" element={<Categories />} />
-          <Route path="/create-quiz" element={<Categories />} />
-          <Route path="/manual-entry" element={<ManualQuizEntry />} />
-          <Route
-            path="/create-questions/:quizId"
-            element={<ManualQuestionEntry />}
-          />
-          <Route path="/review-quiz/:quizId" element={<ReviewQuiz />} />
-          <Route path="/edit-quiz/:quizId" element={<EditQuiz />} />
-          <Route path="/excel-upload" element={<UploadQuizExcel />} />
-          <Route path="/finalize-quiz/:quizId" element={<FinalizeQuiz />} />
-          <Route path="/quiz/:quizId" element={<Quiz />} />
-          <Route path="/details" element={<Details />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signin" element={<Signin />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-        </Routes>
-      </div>
-      {/* <Footer /> */}
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Navbar />
+        <div>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/verify-captcha" element={<CaptchaPage />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/create-quiz" element={<Categories />} />
+            <Route path="/manual-entry" element={<ManualQuizEntry />} />
+            <Route
+              path="/create-questions/:quizId"
+              element={<ManualQuestionEntry />}
+            />
+            <Route path="/review-quiz/:quizId" element={<ReviewQuiz />} />
+            <Route path="/edit-quiz/:quizId" element={<EditQuiz />} />
+            <Route path="/excel-upload" element={<UploadQuizExcel />} />
+            <Route path="/finalize-quiz/:quizId" element={<FinalizeQuiz />} />
+            <Route path="/quiz/:quizId" element={<Quiz />} />
+            <Route path="/details" element={<Details />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signin" element={<Signin />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/profile" element={<Profile />} />
+          </Routes>
+        </div>
+        {/* <Footer /> */}
+      </Router>
+    </AuthProvider>
   );
 }
 

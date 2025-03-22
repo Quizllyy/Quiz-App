@@ -7,19 +7,17 @@ export default function Home() {
 
   useEffect(() => {
     try {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      } else {
-        setUser(null); // ✅ Ensure user state remains null if nothing is found
-      }
-      console.log("Updated User State:", storedUser);
+        const storedUser = sessionStorage.getItem("user");
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        } else {
+            setUser(null);
+        }
     } catch (error) {
-      console.error("Error parsing user data:", error);
-      setUser(null); // ✅ Prevents app from crashing
+        console.error("Error parsing user data:", error);
+        setUser(null);
     }
   }, []);
-
   
   return (
     <div className="flex flex-col justify-start items-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 pt-40">
@@ -44,7 +42,7 @@ export default function Home() {
               } else if (user.role !== "student") {
                 alert("Only students can access the quiz.");
               } else {
-                navigate("/start-quiz");
+                navigate("/verify-captcha");
               }
             }}
           >
