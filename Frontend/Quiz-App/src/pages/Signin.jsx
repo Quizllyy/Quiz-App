@@ -14,12 +14,28 @@ export default function SignIn() {
     setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Sign In Data:", formData);
-    alert("Sign-in successful!");
-    navigate("/");
+    try {
+      const response = await fetch("http://localhost:8080/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+  
+      const data = await response.json();
+      if (response.ok) {
+        alert("Sign-in successful!");
+        navigate("/");
+      } else {
+        alert(data.message || "Signup failed");
+      }
+    } catch (error) {
+      console.error("Error during sign-in:", error);
+    }
   };
+  
+
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 px-6">
@@ -29,6 +45,20 @@ export default function SignIn() {
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+            <label className="block text-gray-700 font-semibold mb-1">
+              Enter your full name
+            </label>
+            <input
+              type="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
           <div>
             <label className="block text-gray-700 font-semibold mb-1">
               Email
@@ -55,6 +85,22 @@ export default function SignIn() {
               className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-semibold mb-1">
+              Select Role
+            </label>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="student">Student</option>
+              <option value="admin">Admin</option>
+            </select>
           </div>
 
           <div className="flex justify-between items-center text-sm">

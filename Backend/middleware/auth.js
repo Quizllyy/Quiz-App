@@ -1,15 +1,25 @@
 const jwt = require("jsonwebtoken");
 
-module.exports = (req, res, next) => {
-  const token = req.header("Authorization")?.split(" ")[1]; // Extract token
+const authMiddleware = (requiredRoles = []) => {
+  return (req, res, next) => {
+    const token = req.header("Authorization")?.split(" ")[1];
 
-  if (!token) return res.status(401).json({ message: "Access Denied" });
+    if (!token) return res.status(401).json({ message: "Access Denied" });
 
-  try {
-    const verified = jwt.verify(token, "SECRET_KEY"); // Use the same secret key
-    req.user = verified; // Store user info in request object
-    next();
-  } catch (error) {
-    res.status(400).json({ message: "Invalid token" });
-  }
+    try {
+      const verified = jwt.verify(token, "SECRET_KEY"); // Ensure you use the correct secret key
+      req.user = verified; // Store user info in request object
+
+      // Check if the user's role is allowed
+      if (requiredRoles.length && !requiredRoles.includes(req.user.role)) {
+        return res.status(403).json({ message: "Forbidden: Access Denied" });
+      }
+
+      next();
+    } catch (error) {
+      res.status(400).json({ message: "Invalid token" });
+    }
+  };
 };
+
+module.exports = authMiddleware;

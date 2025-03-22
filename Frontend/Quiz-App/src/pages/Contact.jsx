@@ -1,6 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function ContactUs() {
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user")); // Check if user is logged in
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -17,32 +21,51 @@ export default function ContactUs() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
+    if (!user || !user.token) { 
+      alert("You must be signed in to send a message.");
+      navigate("/signin");
+      return;
+    }
     setLoading(true);
-
-    const response = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-
-    const result = await response.json();
-    setLoading(false);
-
-    if (result.success) {
-      setStatus({ success: true, message: "Message sent successfully!" });
-      setFormData({
-        name: "",
-        email: "",
-        message: "",
-        access_key: process.env.REACT_APP_WEB3_API_KEY,
+  
+    const formDataWithKey = {
+      ...formData,
+      access_key: process.env.REACT_APP_WEB3_API_KEY, // web3form API key
+    };
+  
+    console.log("Submitting Form Data:", formDataWithKey); // Debugging
+  
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formDataWithKey),
       });
-    } else {
+  
+      const result = await response.json();
+      setLoading(false);
+  
+      if (result.success) {
+        setStatus({ success: true, message: "Message sent successfully!" });
+        setFormData({ name: "", email: "", message: "" }); // Reset form
+      } else {
+        console.error("Web3Forms error:", result);
+        setStatus({
+          success: false,
+          message: result.message || "Something went wrong. Please try again.",
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
       setStatus({
         success: false,
-        message: "Something went wrong. Please try again.",
+        message: "Network error. Please try again.",
       });
+      setLoading(false);
     }
   };
+  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 px-6 pt-28">

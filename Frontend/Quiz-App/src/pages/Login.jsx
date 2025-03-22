@@ -14,12 +14,37 @@ export default function Login() {
     setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Login Data:", formData);
-    alert("Login successful!");
-    navigate("/");
-  };
+
+    try {
+        const response = await fetch("http://localhost:8080/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            localStorage.setItem("token", data.token);
+            if (data.user) {
+                localStorage.setItem("user", JSON.stringify(data.user)); // ✅ Store user object
+            } else {
+                console.warn("No user data received from server.");
+            }
+            alert("Login successful!");
+            navigate("/");
+        } else {
+            console.error("Login Error:", data.message);
+            alert(data.message);
+        }
+    } catch (error) {
+        console.error("Login Error:", error);
+    }
+};
+
+
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 px-6">
