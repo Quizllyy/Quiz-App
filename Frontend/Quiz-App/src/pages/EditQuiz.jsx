@@ -10,27 +10,21 @@ export default function EditQuiz() {
   const [loading, setLoading] = useState(!location.state?.questions);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (!location.state?.questions) {
-      async function fetchQuestions() {
-        try {
-          const response = await axios.get(
-            `http://localhost:8080/api/quizzes/${quizId}`
-          );
-          setQuestions(response.data.questions);
-        } catch (err) {
-          console.error(
-            "Error fetching questions:",
-            err.response?.data || err.message
-          );
-          setError("Failed to load questions.");
-        } finally {
-          setLoading(false);
-        }
-      }
-      fetchQuestions();
+  const fetchQuiz = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/quizzes/${quizId}`
+      );
+      setQuestions(response.data.questions); // ✅ Update UI with fresh data
+    } catch (error) {
+      console.error("Error fetching quiz:", error);
     }
-  }, [quizId, location.state?.questions]);
+  };
+
+  // Call this when the component loads
+  useEffect(() => {
+    fetchQuiz();
+  }, []);
 
   const handleChange = (index, field, value) => {
     const updatedQuestions = [...questions];
@@ -47,13 +41,18 @@ export default function EditQuiz() {
 
   const handleSave = async () => {
     try {
+      console.log("🟢 Sending Questions:", JSON.stringify(questions, null, 2));
+
       await axios.put(`http://localhost:8080/api/quizzes/${quizId}`, {
         questions,
       });
+
       alert("Quiz updated successfully!");
-      navigate(`/review-quiz/${quizId}`);
+
+      // 🛠️ Refetch the updated quiz
+      fetchQuiz();
     } catch (err) {
-      console.error("Error saving quiz:", err.response?.data || err.message);
+      console.error("❌ Error saving quiz:", err.response?.data || err.message);
       setError("Failed to save quiz.");
     }
   };
@@ -116,7 +115,9 @@ export default function EditQuiz() {
                 Correct Answer
               </label>
               <select
-                value={question.correctAnswers[0]}
+                value={questions[index].options.indexOf(
+                  question.correctAnswers[0]
+                )} // Convert text to index
                 onChange={(e) =>
                   handleChange(index, "correctAnswers", e.target.value)
                 }

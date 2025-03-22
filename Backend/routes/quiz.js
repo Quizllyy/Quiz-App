@@ -4,94 +4,127 @@ const mongoose = require("mongoose");
 const Quiz = require("../models/quiz");
 const Question = require("../models/questions");
 
-// Create a new quiz
+// ✅ Create a new quiz
 router.post("/create", async (req, res) => {
-  try {
-    const { title, numQuestions, timeLimit, secretCode } = req.body;
+    try {
+        const { title, numQuestions, timeLimit, secretCode } = req.body;
 
-    if (!title || !numQuestions || !timeLimit || !secretCode) {
-      return res.status(400).json({ message: "All fields are required!" });
+        if (!title || !numQuestions || !timeLimit || !secretCode) {
+            return res.status(400).json({ message: "All fields are required!" });
+        }
+
+        const newQuiz = new Quiz({ title, numQuestions, timeLimit, secretCode });
+        await newQuiz.save();
+
+        res.status(201).json({ message: "Quiz saved successfully!", quiz: newQuiz });
+    } catch (error) {
+        console.error("Error saving quiz:", error);
+        res.status(500).json({ message: "Server error, try again later." });
     }
-
-    const newQuiz = new Quiz({ title, numQuestions, timeLimit, secretCode });
-    await newQuiz.save();
-
-    res
-      .status(201)
-      .json({ message: "Quiz saved successfully!", quiz: newQuiz });
-  } catch (error) {
-    console.error("Error saving quiz:", error);
-    res.status(500).json({ message: "Server error, try again later." });
-  }
 });
 
+// ✅ Route 1: Fetch Quiz & Questions (Without Secret Code)
 router.get("/:quizId", async (req, res) => {
-  try {
-    const { quizId } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(quizId)) {
-      return res.status(400).json({
-        message: "Invalid quiz ID format. Must be a 24-character hex string.",
-      });
-    }
+    try {
+        const { quizId } = req.params;
 
-    const quiz = await Quiz.findById(quizId);
-    if (!quiz) {
-      return res.status(404).json({ message: "Quiz not found" });
-    }
+        if (!mongoose.Types.ObjectId.isValid(quizId)) {
+            return res.status(400).json({ message: "Invalid quiz ID format." });
+        }
 
-    res.json({ secretCode: quiz.secretCode });
-  } catch (error) {
-    console.error("Error fetching quiz:", error);
-    res.status(500).json({ message: "Server error" });
-  }
+        const quiz = await Quiz.findById(quizId).select("-secretCode");
+        if (!quiz) {
+            return res.status(404).json({ message: "Quiz not found" });
+        }
+
+        const questions = await Question.find({ quizId }).select("-correctAnswer");
+
+        console.log("Final API Response:", { quiz, questions });
+
+        res.json({ quiz, questions });
+    } catch (error) {
+        console.error("Error fetching quiz:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+// ✅ Route 2: Fetch Secret Code
+router.get("/:quizId/secret", async (req, res) => {
+    try {
+        const { quizId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(quizId)) {
+            return res.status(400).json({ message: "Invalid quiz ID format." });
+        }
+
+        const quiz = await Quiz.findById(quizId);
+        if (!quiz) {
+            return res.status(404).json({ message: "Quiz not found" });
+        }
+
+        res.json({ secretCode: quiz.secretCode });
+    } catch (error) {
+        console.error("Error fetching secret code:", error);
+        res.status(500).json({ message: "Server error" });
+    }
 });
 
 router.post("/verify-secret-code", async (req, res) => {
-  try {
-    const { secretCode } = req.body;
+    try {
+        const { secretCode } = req.body;
 
-    if (!secretCode) {
-      return res.status(400).json({ message: "Secret code is required!" });
+        if (!secretCode) {
+            return res.status(400).json({ message: "Secret code is required!" });
+        }
+
+        const quiz = await Quiz.findOne({ secretCode });
+
+        if (!quiz) {
+            return res
+                .status(404)
+                .json({ valid: false, message: "Invalid secret code." });
+        }
+
+        res.json({ valid: true, quizId: quiz._id });
+    } catch (error) {
+        console.error("Error verifying secret code:", error);
+        res.status(500).json({ message: "Server error, please try again later." });
     }
-
-    const quiz = await Quiz.findOne({ secretCode });
-
-    if (!quiz) {
-      return res
-        .status(404)
-        .json({ valid: false, message: "Invalid secret code." });
-    }
-
-    res.json({ valid: true, quizId: quiz._id });
-  } catch (error) {
-    console.error("Error verifying secret code:", error);
-    res.status(500).json({ message: "Server error, please try again later." });
-  }
 });
 
-router.get("/:quizId", async (req, res) => {
-  try {
-    const { quizId } = req.params;
+// ✅ PUT route for updating quiz questions
+router.put("/:quizId", async (req, res) => {
+    try {
+        const { quizId } = req.params;
+        const { questions } = req.body;
 
-    // Validate quizId
-    if (!mongoose.Types.ObjectId.isValid(quizId)) {
-      return res.status(400).json({ message: "Invalid quiz ID format." });
+        console.log("🟢 Received PUT request for quizId:", quizId);
+        console.log("🟢 Received Questions Data:", JSON.stringify(questions, null, 2));
+
+        if (!mongoose.Types.ObjectId.isValid(quizId)) {
+            console.log("🔴 Invalid Quiz ID");
+            return res.status(400).json({ message: "Invalid quiz ID format." });
+        }
+
+        const quiz = await Quiz.findById(quizId);
+        if (!quiz) {
+            console.log("🔴 Quiz Not Found");
+            return res.status(404).json({ message: "Quiz not found" });
+        }
+
+        // ✅ Updating each question
+        for (const questionData of questions) {
+            console.log(`🔹 Updating Question ID: ${questionData._id}`);
+            const updatedQuestion = await Question.findByIdAndUpdate(questionData._id, questionData, { new: true });
+            console.log("✅ Updated Question:", updatedQuestion);
+        }
+
+        res.json({ message: "Quiz updated successfully!" });
+    } catch (error) {
+        console.error("❌ Error updating quiz:", error);
+        res.status(500).json({ message: "Server error" });
     }
-
-    // Find the quiz
-    const quiz = await Quiz.findById(quizId);
-    if (!quiz) {
-      return res.status(404).json({ message: "Quiz not found" });
-    }
-
-    // Find questions that belong to this quiz
-    const questions = await Question.find({ quizId });
-
-    res.json({ quiz, questions }); // ✅ Return quiz and its questions
-  } catch (error) {
-    console.error("Error fetching quiz:", error);
-    res.status(500).json({ message: "Server error" });
-  }
 });
+
 
 module.exports = router;
