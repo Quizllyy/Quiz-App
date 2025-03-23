@@ -1,49 +1,48 @@
 import { createContext, useContext, useState, useEffect } from "react";
 
-export const AuthContext = createContext();
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  let initialUser = null;
+  const [user, setUser] = useState(null);
 
-  try {
-    const storedUser = sessionStorage.getItem("user");
-
-    // ✅ Prevent parsing "undefined" and invalid values
-    if (storedUser && storedUser !== "undefined") {
-      initialUser = JSON.parse(storedUser);
-    } else {
-      initialUser = null;
-    }
-  } catch (error) {
-    console.error("Error parsing user data:", error);
-    initialUser = null;
-    sessionStorage.removeItem("user"); // ✅ Remove corrupted data
-  }
-
-  const [user, setUser] = useState(initialUser);
-
+  // ✅ Load user from sessionStorage on page load
   useEffect(() => {
-    if (user) {
-      sessionStorage.setItem("user", JSON.stringify(user));
-    } else {
-      sessionStorage.removeItem("user");
+    try {
+      const storedUser = sessionStorage.getItem("user");
+      console.log("Stored user in sessionStorage:", storedUser); // Debugging
+  
+      if (storedUser && storedUser !== "undefined" && storedUser !== "null") {
+        setUser(JSON.parse(storedUser));
+        console.log("User state updated:", JSON.parse(storedUser)); // Debugging
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      console.error("Error parsing user data from sessionStorage:", error);
+      setUser(null);
     }
-  }, [user]);
+  }, []);
+  
+  
 
-  // ✅ Logout function
-  const logout = () => {
+  const signIn = (userData) => {
+    setUser(userData); // ✅ Update state so Navbar re-renders
+    sessionStorage.setItem("user", JSON.stringify(userData));
+  };
+
+  const signOut = () => {
     setUser(null);
     sessionStorage.removeItem("user");
+    sessionStorage.removeItem("token");
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, logout }}>
+    <AuthContext.Provider value={{ user, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// ✅ Provide a safe useAuth() hook
 export const useAuth = () => {
   return useContext(AuthContext);
 };

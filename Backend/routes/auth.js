@@ -22,7 +22,13 @@ router.post("/signup", async (req, res) => {
     const user = new User({ name, email, password: hashedPassword, role });
     await user.save();
 
-    res.status(201).json({ message: "User registered successfully" });
+    // Remove password field before sending response
+    const { password: _, ...userWithoutPassword } = user.toObject();
+
+    res.status(201).json({
+      message: "User registered successfully",
+      user: userWithoutPassword, // ✅ Send user data in response
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }

@@ -7,6 +7,8 @@ export default function Navbar() {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
+  console.log("Navbar Rendered. User:", user);
+
   return (
     <nav className="bg-gradient-to-r from-blue-500 to-purple-600 shadow-md fixed w-full z-50">
       <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
@@ -36,11 +38,15 @@ export default function Navbar() {
 
         {/* Mobile Menu Toggle */}
         <button
-          className="md:hidden text-white focus:outline-none text-2xl"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          ☰
-        </button>
+  className="md:hidden text-white focus:outline-none text-2xl"
+  onClick={() => {
+    setIsOpen(!isOpen);
+    console.log("Mobile menu toggled. New state:", !isOpen);
+  }}
+>
+  ☰
+</button>
+
       </div>
 
       {/* Mobile Dropdown Menu */}

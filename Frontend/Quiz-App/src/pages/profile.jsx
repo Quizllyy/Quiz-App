@@ -4,7 +4,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext"; 
 
 export default function Profile() {
-  const { user, logout } = useAuth(); // ✅ Now logout is available
+  const { user, signOut } = useAuth(); // ✅ Now logout is available
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function Profile() {
             <p className="text-gray-600">{user.email}</p>
             <button
               onClick={() => {
-                logout();  // ✅ Clears user session
+                signOut();  // ✅ Clears user session
                 navigate("/"); // ✅ Redirects to home
               }}
               className="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition">

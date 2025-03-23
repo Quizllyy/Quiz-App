@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"; // ✅ Import useAuth
 
 export default function Login() {
   const navigate = useNavigate();
+  const { signIn } = useAuth(); // ✅ Get signIn from AuthContext
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -18,25 +20,28 @@ export default function Login() {
     e.preventDefault();
 
     try {
-        const response = await fetch("http://localhost:8080/api/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-        });
+      const response = await fetch("http://localhost:8080/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-        const data = await response.json();
-        if (response.ok) {
-            sessionStorage.setItem("token", data.token); // Store token in session
-            if (data.user) {
-                sessionStorage.setItem("user", JSON.stringify(data.user)); // Store user in session
-            }
-            alert("Login successful!");
-            navigate("/");
-        } else {
-            alert(data.message);
+      const data = await response.json();
+      if (response.ok) {
+        sessionStorage.setItem("token", data.token);
+        sessionStorage.setItem("user", JSON.stringify(data.user)); // ✅ Store user data
+
+        if (data.user) {
+          signIn(data.user); // ✅ Update AuthContext to trigger re-render
         }
+
+        alert("Login successful!");
+        navigate("/");
+      } else {
+        alert(data.message);
+      }
     } catch (error) {
-        console.error("Login Error:", error);
+      console.error("Login Error:", error);
     }
   };
 
@@ -76,25 +81,10 @@ export default function Login() {
             />
           </div>
 
-          <div className="flex justify-between items-center text-sm">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                name="remember"
-                checked={formData.remember}
-                onChange={handleChange}
-                className="mr-2"
-              />
-              Remember Me
-            </label>
-            <a href="#" className="text-blue-600 hover:underline">
-              Forgot Password?
-            </a>
-          </div>
-
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition font-semibold">
+            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition font-semibold"
+          >
             Login
           </button>
         </form>

@@ -29,14 +29,19 @@ export default function SignIn() {
       });
   
       const data = await response.json();
-  
+      console.log("Full Backend Response:", data); // Debugging
+      
       if (response.ok) {
-        sessionStorage.setItem("token", data.token);
-        sessionStorage.setItem("user", JSON.stringify(data.user)); // ✅ Store user details
-  
-        if (data.user) {
-          signIn(data.user); // ✅ Update AuthContext state
+        if (!data.user) {
+          console.error("Error: No user data received from backend!");
+          alert("Error: No user data received. Check backend response.");
+          return;
         }
+  
+        sessionStorage.setItem("token", data.token);
+        sessionStorage.setItem("user", JSON.stringify(data.user));
+  
+        signIn(data.user); // ✅ Update global state
   
         alert("Sign-in successful!");
         navigate("/");
@@ -47,6 +52,7 @@ export default function SignIn() {
       console.error("Error during sign-in:", error);
     }
   };
+  
   
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 px-6">
