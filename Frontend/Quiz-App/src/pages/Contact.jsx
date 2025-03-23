@@ -3,14 +3,14 @@ import { useNavigate } from "react-router-dom";
 
 export default function ContactUs() {
   const navigate = useNavigate();
-  const user = JSON.parse(sessionStorage.getItem("user"));// Check if user is logged in
+  const user = JSON.parse(sessionStorage.getItem("user")); // Check if user is logged in
 
   const [formData, setFormData] = useState({
     name: user?.name || "",
     email: user?.email || "",
     message: "",
     // access_key: process.env.REACT_APP_WEB3_API_KEY,
-  });  
+  });
 
   const [status, setStatus] = useState({ success: false, message: "" });
   const [loading, setLoading] = useState(false);
@@ -21,30 +21,30 @@ export default function ContactUs() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    if (!user) { 
+
+    if (!user) {
       alert("You must be signed in to send a message.");
       navigate("/signin");
       return;
     }
     setLoading(true);
-  
+
     const formDataWithKey = {
       ...formData,
       access_key: process.env.REACT_APP_WEB3_API_KEY,
-      honeypot: "",  // Add an empty hidden field
+      honeypot: "", // Add an empty hidden field
     };
-  
+
     try {
       const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formDataWithKey),
       });
-  
+
       const result = await response.json();
       setLoading(false);
-  
+
       if (result.success) {
         setStatus({ success: true, message: "Message sent successfully!" });
         setFormData({ name: "", email: "", message: "" }); // Reset form
@@ -64,10 +64,9 @@ export default function ContactUs() {
       setLoading(false);
     }
   };
-  
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 px-6 pt-28">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 px-6 pt-16">
       <h1 className="text-4xl font-extrabold text-gray-800 mb-6">Contact Us</h1>
       <p className="text-gray-700 mb-8 text-center max-w-lg">
         Have any questions or feedback? Fill out the form below, and we'll get
@@ -91,13 +90,13 @@ export default function ContactUs() {
             <label className="block text-gray-700 font-semibold mb-1">
               Name
             </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                className="w-full px-4 py-2 border rounded-md bg-gray-100 cursor-not-allowed"
-                readOnly
-              />
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              className="w-full px-4 py-2 border rounded-md bg-gray-100 cursor-not-allowed"
+              readOnly
+            />
           </div>
 
           <div>

@@ -27,22 +27,22 @@ export default function SignIn() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-  
+
       const data = await response.json();
       console.log("Full Backend Response:", data); // Debugging
-      
+
       if (response.ok) {
         if (!data.user) {
           console.error("Error: No user data received from backend!");
           alert("Error: No user data received. Check backend response.");
           return;
         }
-  
+
         sessionStorage.setItem("token", data.token);
         sessionStorage.setItem("user", JSON.stringify(data.user));
-  
+
         signIn(data.user); // ✅ Update global state
-  
+
         alert("Sign-in successful!");
         navigate("/");
       } else {
@@ -52,10 +52,9 @@ export default function SignIn() {
       console.error("Error during sign-in:", error);
     }
   };
-  
-  
+
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 px-6">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 px-6 pt-12">
       <div className="bg-white shadow-xl rounded-2xl p-8 max-w-md w-full border border-gray-300">
         <h1 className="text-3xl font-extrabold text-gray-800 text-center mb-6">
           Sign In
@@ -105,7 +104,7 @@ export default function SignIn() {
           </div>
 
           <div>
-            <label className="block text-gray-700 font-semibold mb-1">
+            <label className="block text-gray-700 font-semibold mb-8">
               Select Role
             </label>
             <select
@@ -113,33 +112,15 @@ export default function SignIn() {
               value={formData.role}
               onChange={handleChange}
               className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            >
+              required>
               <option value="student">Student</option>
               <option value="admin">Admin</option>
             </select>
           </div>
 
-          <div className="flex justify-between items-center text-sm">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                name="remember"
-                checked={formData.remember}
-                onChange={handleChange}
-                className="mr-2"
-              />
-              Remember Me
-            </label>
-            <a href="#" className="text-blue-600 hover:underline">
-              Forgot Password?
-            </a>
-          </div>
-
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition font-semibold"
-          >
+            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition font-semibold">
             Sign In
           </button>
         </form>
