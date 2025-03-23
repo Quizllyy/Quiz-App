@@ -7,10 +7,17 @@ export const AuthProvider = ({ children }) => {
 
   try {
     const storedUser = sessionStorage.getItem("user");
-    initialUser = storedUser ? JSON.parse(storedUser) : null;
+
+    // ✅ Prevent parsing "undefined" and invalid values
+    if (storedUser && storedUser !== "undefined") {
+      initialUser = JSON.parse(storedUser);
+    } else {
+      initialUser = null;
+    }
   } catch (error) {
     console.error("Error parsing user data:", error);
     initialUser = null;
+    sessionStorage.removeItem("user"); // ✅ Remove corrupted data
   }
 
   const [user, setUser] = useState(initialUser);
@@ -23,20 +30,20 @@ export const AuthProvider = ({ children }) => {
     }
   }, [user]);
 
-  // ✅ Define logout function
+  // ✅ Logout function
   const logout = () => {
     setUser(null);
     sessionStorage.removeItem("user");
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, logout }}> 
+    <AuthContext.Provider value={{ user, setUser, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// ✅ Ensure useAuth() provides logout
+// ✅ Provide a safe useAuth() hook
 export const useAuth = () => {
   return useContext(AuthContext);
 };

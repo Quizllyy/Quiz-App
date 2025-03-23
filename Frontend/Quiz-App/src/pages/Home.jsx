@@ -8,16 +8,27 @@ export default function Home() {
   useEffect(() => {
     try {
         const storedUser = sessionStorage.getItem("user");
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
+
+        // Ensure storedUser is valid before parsing
+        if (storedUser && storedUser !== "undefined") {
+            const parsedUser = JSON.parse(storedUser);
+            if (parsedUser && typeof parsedUser === "object") {
+                setUser(parsedUser);
+            } else {
+                console.error("Invalid user data format");
+                setUser(null);
+            }
         } else {
             setUser(null);
         }
     } catch (error) {
         console.error("Error parsing user data:", error);
         setUser(null);
+        sessionStorage.removeItem("user"); // Clear corrupted data
     }
-  }, []);
+}, []);
+
+
   
   return (
     <div className="flex flex-col justify-start items-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 pt-40">
