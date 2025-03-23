@@ -92,7 +92,40 @@ router.post("/verify-secret-code", async (req, res) => {
     }
 });
 
-// ✅ PUT route for updating quiz questions
+// // ✅ PUT route for updating quiz questions
+// router.put("/:quizId", async (req, res) => {
+//     try {
+//         const { quizId } = req.params;
+//         const { questions } = req.body;
+
+//         console.log("🟢 Received PUT request for quizId:", quizId);
+//         console.log("🟢 Received Questions Data:", JSON.stringify(questions, null, 2));
+
+//         if (!mongoose.Types.ObjectId.isValid(quizId)) {
+//             console.log("🔴 Invalid Quiz ID");
+//             return res.status(400).json({ message: "Invalid quiz ID format." });
+//         }
+
+//         const quiz = await Quiz.findById(quizId);
+//         if (!quiz) {
+//             console.log("🔴 Quiz Not Found");
+//             return res.status(404).json({ message: "Quiz not found" });
+//         }
+
+//         // ✅ Updating each question
+//         for (const questionData of questions) {
+//             console.log(`🔹 Updating Question ID: ${questionData._id}`);
+//             const updatedQuestion = await Question.findByIdAndUpdate(questionData._id, questionData, { new: true });
+//             console.log("✅ Updated Question:", updatedQuestion);
+//         }
+
+//         res.json({ message: "Quiz updated successfully!" });
+//     } catch (error) {
+//         console.error("❌ Error updating quiz:", error);
+//         res.status(500).json({ message: "Server error" });
+//     }
+// });
+
 router.put("/:quizId", async (req, res) => {
     try {
         const { quizId } = req.params;
@@ -106,18 +139,24 @@ router.put("/:quizId", async (req, res) => {
             return res.status(400).json({ message: "Invalid quiz ID format." });
         }
 
+        // ✅ Check if quiz exists
         const quiz = await Quiz.findById(quizId);
         if (!quiz) {
             console.log("🔴 Quiz Not Found");
             return res.status(404).json({ message: "Quiz not found" });
         }
 
-        // ✅ Updating each question
-        for (const questionData of questions) {
-            console.log(`🔹 Updating Question ID: ${questionData._id}`);
-            const updatedQuestion = await Question.findByIdAndUpdate(questionData._id, questionData, { new: true });
-            console.log("✅ Updated Question:", updatedQuestion);
-        }
+        // ✅ Prepare bulk operations for updating or inserting questions
+        const bulkOperations = questions.map((questionData) => ({
+            updateOne: {
+                filter: { _id: questionData._id || new mongoose.Types.ObjectId(), quizId },
+                update: { $set: questionData },
+                upsert: true, // If question doesn't exist, insert it
+            },
+        }));
+
+        // ✅ Execute bulk update
+        await Question.bulkWrite(bulkOperations);
 
         res.json({ message: "Quiz updated successfully!" });
     } catch (error) {
@@ -125,6 +164,7 @@ router.put("/:quizId", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
 
 
 module.exports = router;
