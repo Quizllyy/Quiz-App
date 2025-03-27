@@ -34,11 +34,14 @@ export default function ReviewUploadedQuiz() {
     };
 
     try {
-      const response = await fetch("http://localhost:5000/api/excel/save-quiz", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(quizPayload),
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/excel/save-quiz",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(quizPayload),
+        }
+      );
 
       const data = await response.json();
       if (data.success) {
@@ -53,7 +56,7 @@ export default function ReviewUploadedQuiz() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 pt-24">
       <div className="bg-white shadow-lg rounded-lg p-8 w-[40rem] text-center border border-gray-300">
         <h2 className="text-3xl font-bold text-gray-800 mb-6">
           Review Quiz Questions
@@ -76,7 +79,9 @@ export default function ReviewUploadedQuiz() {
             <thead>
               <tr className="bg-gray-200">
                 {Object.keys(quizData[0]).map((key, index) => (
-                  <th key={index} className="border p-2">{key}</th>
+                  <th key={index} className="border p-2">
+                    {key}
+                  </th>
                 ))}
               </tr>
             </thead>
@@ -84,7 +89,9 @@ export default function ReviewUploadedQuiz() {
               {quizData.map((row, index) => (
                 <tr key={index} className="border">
                   {Object.values(row).map((cell, cellIndex) => (
-                    <td key={cellIndex} className="border p-2">{cell}</td>
+                    <td key={cellIndex} className="border p-2">
+                      {cell}
+                    </td>
                   ))}
                 </tr>
               ))}
@@ -96,7 +103,9 @@ export default function ReviewUploadedQuiz() {
 
         {/* Time Limit Input */}
         <div className="mt-6">
-          <label className="text-gray-700 font-semibold">Set Time Limit (in minutes):</label>
+          <label className="text-gray-700 font-semibold">
+            Set Time Limit (in minutes):
+          </label>
           <input
             type="number"
             className="border p-2 mt-2 rounded w-full"
@@ -109,8 +118,7 @@ export default function ReviewUploadedQuiz() {
         {/* Save Quiz Button */}
         <button
           onClick={handleSaveQuiz}
-          className="mt-6 bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 transition"
-        >
+          className="mt-6 bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 transition">
           Finalize & Save Quiz
         </button>
       </div>
