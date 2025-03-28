@@ -22,6 +22,10 @@ app.use("/api/quiz", quizRoutes);
 const questionRoutes = require("./routes/questions");
 app.use("/api/questions", questionRoutes);
 
+const resultRoutes = require("./routes/result");
+app.use("/api/quiz", resultRoutes);
+
+
 app.get("/", (req, res) => {
   res.send("Quiz App Backend is Running");
 });

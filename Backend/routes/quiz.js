@@ -23,6 +23,39 @@ router.post("/create", async (req, res) => {
     }
 });
 
+router.post("/submit", async (req, res) => {
+    try {
+        const { quizId, userId, responses } = req.body;
+
+        if (!quizId || !userId || !responses) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+
+        // Calculate score (assuming responses is an object with questionId -> selectedOption)
+        let score = 0;
+        for (const questionId in responses) {
+            // Compare selectedOption with the correct answer (fetch from DB)
+            // Assuming you have a Question model
+        }
+
+        const newResult = new Result({
+            quizId,
+            userId,
+            answers: Object.keys(responses).map((questionId) => ({
+                questionId,
+                selectedOption: responses[questionId],
+            })),
+            score,
+        });
+
+        await newResult.save();
+        res.status(201).json({ message: "Quiz submitted successfully", result: newResult });
+    } catch (error) {
+        console.error("Error submitting quiz:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
 // ✅ Route 1: Fetch Quiz & Questions (Without Secret Code)
 router.get("/:quizId", async (req, res) => {
     try {
@@ -91,40 +124,6 @@ router.post("/verify-secret-code", async (req, res) => {
         res.status(500).json({ message: "Server error, please try again later." });
     }
 });
-
-// // ✅ PUT route for updating quiz questions
-// router.put("/:quizId", async (req, res) => {
-//     try {
-//         const { quizId } = req.params;
-//         const { questions } = req.body;
-
-//         console.log("🟢 Received PUT request for quizId:", quizId);
-//         console.log("🟢 Received Questions Data:", JSON.stringify(questions, null, 2));
-
-//         if (!mongoose.Types.ObjectId.isValid(quizId)) {
-//             console.log("🔴 Invalid Quiz ID");
-//             return res.status(400).json({ message: "Invalid quiz ID format." });
-//         }
-
-//         const quiz = await Quiz.findById(quizId);
-//         if (!quiz) {
-//             console.log("🔴 Quiz Not Found");
-//             return res.status(404).json({ message: "Quiz not found" });
-//         }
-
-//         // ✅ Updating each question
-//         for (const questionData of questions) {
-//             console.log(`🔹 Updating Question ID: ${questionData._id}`);
-//             const updatedQuestion = await Question.findByIdAndUpdate(questionData._id, questionData, { new: true });
-//             console.log("✅ Updated Question:", updatedQuestion);
-//         }
-
-//         res.json({ message: "Quiz updated successfully!" });
-//     } catch (error) {
-//         console.error("❌ Error updating quiz:", error);
-//         res.status(500).json({ message: "Server error" });
-//     }
-// });
 
 router.put("/:quizId", async (req, res) => {
     try {
