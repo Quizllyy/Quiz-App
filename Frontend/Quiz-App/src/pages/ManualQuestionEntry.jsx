@@ -1,203 +1,185 @@
-import React, { useState } from "react";
+import React, { useReducer, useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
 
-export default function ManualQuestionEntry() {
-  const navigate = useNavigate();
-  // Extract quizId from URL
-  const { quizId } = useParams();
-  console.log("🎯 Retrieved quizId from useParams:", quizId);
-
-  if (!quizId) {
-    console.error(
-      "❌ ERROR: quizId is undefined! Check your route. The URL should include a valid quiz ID."
-    );
+// 🎯 Reducer Function for Optimized State Updates
+const quizReducer = (state, action) => {
+  switch (action.type) {
+    case "SET_QUIZ":
+      return action.payload;
+    case "UPDATE_QUESTION":
+      return state.map((q, index) =>
+        index === action.index ? { ...q, ...action.payload } : q
+      );
+    default:
+      return state;
   }
+};
 
-  const [questions, setQuestions] = useState([
-    { text: "", options: ["", "", "", ""], correctAnswers: [], type: "single" },
-  ]);
+export default function EditQuiz() {
+  const { quizId } = useParams();
+  const navigate = useNavigate();
+  const [questions, dispatch] = useReducer(quizReducer, []);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [updating, setUpdating] = useState(null); // Track which question is being updated
 
-  const handleQuestionChange = (index, value) => {
-    const updatedQuestions = [...questions];
-    updatedQuestions[index].text = value;
-    setQuestions(updatedQuestions);
-  };
-
-  const handleOptionChange = (qIndex, oIndex, value) => {
-    const updatedQuestions = [...questions];
-    updatedQuestions[qIndex].options[oIndex] = value;
-    setQuestions(updatedQuestions);
-  };
-
-  const handleCorrectAnswerChange = (qIndex, oIndex, checked) => {
-    const updatedQuestions = [...questions];
-    if (updatedQuestions[qIndex].type === "multiple") {
-      let newCorrectAnswers = [...updatedQuestions[qIndex].correctAnswers];
-      if (checked) {
-        if (!newCorrectAnswers.includes(oIndex)) {
-          newCorrectAnswers.push(oIndex);
-        }
-      } else {
-        newCorrectAnswers = newCorrectAnswers.filter((ans) => ans !== oIndex);
+  useEffect(() => {
+    const fetchQuiz = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/quiz/${quizId}`
+        );
+        dispatch({ type: "SET_QUIZ", payload: response.data.questions });
+      } catch (err) {
+        setError("Failed to load quiz.");
+      } finally {
+        setLoading(false);
       }
-      updatedQuestions[qIndex].correctAnswers = newCorrectAnswers;
-    } else {
-      updatedQuestions[qIndex].correctAnswers = [oIndex];
-    }
-    setQuestions(updatedQuestions);
-  };
+    };
+    fetchQuiz();
+  }, [quizId]);
 
-  const handleTypeChange = (index, value) => {
-    const updatedQuestions = [...questions];
-    updatedQuestions[index].type = value;
-    updatedQuestions[index].correctAnswers = [];
-    setQuestions(updatedQuestions);
-  };
-
-  const addQuestion = () => {
-    setQuestions([
-      ...questions,
-      {
-        text: "",
-        options: ["", "", "", ""],
-        correctAnswers: [],
-        type: "single",
-      },
-    ]);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const payload = { quizId, questions };
-    console.log("🚀 Sending request to backend...");
-    console.log("Request payload:", JSON.stringify(payload, null, 2));
-
-    // Validate quizId before sending
-    if (!quizId || quizId.includes("${")) {
-      console.error("❌ quizId is invalid:", quizId);
-      alert(
-        "Quiz ID is not set properly! Please navigate with a valid quiz ID in the URL."
-      );
-      return;
-    }
-
+  const updateQuestionInDB = async (index, updates) => {
+    setUpdating(index);
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/questions/create",
-        payload
+      await axios.put(
+        `http://localhost:8080/api/quiz/${quizId}/question/${index}`,
+        updates
       );
-      console.log("✅ Response from backend:", response.data);
-      alert(response.data.message);
-      // Instead of extracting createdQuizId from response, use the quizId from URL
-      navigate(`/review-quiz/${quizId}`);
-    } catch (error) {
-      console.error(
-        "❌ Error saving questions:",
-        error.response?.data || error.message
-      );
-      alert(
-        error.response?.data?.message ||
-          "Failed to save questions. Try again later."
-      );
+    } catch (err) {
+      console.error("❌ Update failed:", err);
+      setError("Failed to update question.");
+    } finally {
+      setUpdating(null);
     }
   };
+
+  const handleChange = (index, field, value) => {
+    const updatedQuestion = { [field]: value };
+
+    if (field === "type") {
+      updatedQuestion.correctAnswers = value === "write" ? [""] : [];
+    } else if (field.startsWith("option")) {
+      const optionIndex = parseInt(field.split("-")[1], 10);
+      updatedQuestion.options = [...questions[index].options];
+      updatedQuestion.options[optionIndex] = value;
+    } else if (field === "correctAnswers") {
+      updatedQuestion.correctAnswers =
+        questions[index].type === "multiple"
+          ? questions[index].correctAnswers.includes(value)
+            ? questions[index].correctAnswers.filter((ans) => ans !== value)
+            : [...questions[index].correctAnswers, value]
+          : [value];
+    }
+
+    dispatch({ type: "UPDATE_QUESTION", index, payload: updatedQuestion });
+    updateQuestionInDB(index, updatedQuestion);
+  };
+
+  if (loading) return <h2 className="text-center text-2xl">Loading...</h2>;
+  if (error)
+    return <h2 className="text-center text-2xl text-red-500">{error}</h2>;
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 pt-28 pb-28 px-4">
-      <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-2xl text-center border border-gray-300">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">
-          Enter Questions Manually
+    <div className="flex flex-col items-center justify-start min-h-screen bg-gray-100 p-10">
+      <div className="w-full max-w-4xl bg-white shadow-lg rounded-xl p-8">
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+          Edit Your Quiz
         </h2>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-          {questions.map((q, qIndex) => (
-            <div
-              key={qIndex}
-              className="text-left border p-4 rounded-lg bg-gray-50">
-              <label className="block text-sm font-medium text-gray-700">
-                Question {qIndex + 1}
-              </label>
-              <input
-                type="text"
-                className="w-full p-2 border rounded-md mb-3 focus:ring-2 focus:ring-blue-500 transition"
-                value={q.text}
-                onChange={(e) => handleQuestionChange(qIndex, e.target.value)}
-                placeholder="Enter your question here"
-                required
-              />
-              <label className="block text-sm font-medium text-gray-700">
-                Question Type
-              </label>
-              <select
-                className="w-full p-2 border rounded-md mb-3 focus:ring-2 focus:ring-blue-500 transition"
-                value={q.type}
-                onChange={(e) => handleTypeChange(qIndex, e.target.value)}
-                required>
-                <option value="" disabled>
-                  Select Question Type
-                </option>
-                <option value="single">Single Correct</option>
-                <option value="multiple">Multiple Correct</option>
-                <option value="write">Write Answer</option>
-              </select>
-              {q.type !== "write" && (
-                <>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Options
-                  </label>
-                  {q.options.map((option, oIndex) => (
-                    <div key={oIndex} className="flex items-center gap-2">
+        {questions.map((question, index) => (
+          <div key={index} className="mb-8 p-4 border-b">
+            <label className="block text-gray-700 font-semibold mb-1">
+              Question {index + 1}
+            </label>
+            <input
+              type="text"
+              value={question.text}
+              onChange={(e) => handleChange(index, "text", e.target.value)}
+              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+            />
+            {updating === index && (
+              <p className="text-sm text-gray-500">Updating...</p>
+            )}
+
+            <label className="block text-gray-700 font-semibold mt-3">
+              Question Type
+            </label>
+            <select
+              value={question.type}
+              onChange={(e) => handleChange(index, "type", e.target.value)}
+              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500">
+              <option value="single">Single Correct</option>
+              <option value="multiple">Multiple Correct</option>
+              <option value="write">Write Answer</option>
+            </select>
+
+            {question.type !== "write" && (
+              <>
+                <label className="block text-gray-700 font-semibold mt-3">
+                  Options
+                </label>
+                {question.options.map((option, optionIndex) => (
+                  <div key={optionIndex} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={option}
+                      onChange={(e) =>
+                        handleChange(
+                          index,
+                          `option-${optionIndex}`,
+                          e.target.value
+                        )
+                      }
+                      className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                    {question.type === "multiple" ? (
                       <input
-                        type="text"
-                        className="w-full p-2 border rounded-md mb-2 focus:ring-2 focus:ring-blue-500 transition"
-                        value={option}
-                        onChange={(e) =>
-                          handleOptionChange(qIndex, oIndex, e.target.value)
+                        type="checkbox"
+                        checked={question.correctAnswers.includes(option)}
+                        onChange={() =>
+                          handleChange(index, "correctAnswers", option)
                         }
-                        placeholder={`Option ${oIndex + 1}`}
-                        required
                       />
-                      {q.type === "multiple" ? (
-                        <input
-                          type="checkbox"
-                          checked={q.correctAnswers.includes(oIndex)}
-                          onChange={(e) =>
-                            handleCorrectAnswerChange(
-                              qIndex,
-                              oIndex,
-                              e.target.checked
-                            )
-                          }
-                        />
-                      ) : (
-                        <input
-                          type="radio"
-                          name={`correct-${qIndex}`}
-                          checked={q.correctAnswers[0] === oIndex}
-                          onChange={() =>
-                            handleCorrectAnswerChange(qIndex, oIndex, true)
-                          }
-                        />
-                      )}
-                    </div>
-                  ))}
-                </>
-              )}
-            </div>
-          ))}
+                    ) : (
+                      <input
+                        type="radio"
+                        name={`correct-${index}`}
+                        checked={question.correctAnswers[0] === option}
+                        onChange={() =>
+                          handleChange(index, "correctAnswers", option)
+                        }
+                      />
+                    )}
+                  </div>
+                ))}
+              </>
+            )}
+
+            {question.type === "write" && (
+              <>
+                <label className="block text-gray-700 font-semibold mt-3">
+                  Correct Answer
+                </label>
+                <input
+                  type="text"
+                  value={question.correctAnswers[0]}
+                  onChange={(e) =>
+                    handleChange(index, "correctAnswers", e.target.value)
+                  }
+                  className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </>
+            )}
+          </div>
+        ))}
+        <div className="flex justify-end mt-8">
           <button
-            type="button"
-            className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700 transition font-semibold"
-            onClick={addQuestion}>
-            + Add Another Question
+            onClick={() => navigate(`/review-quiz/${quizId}`)}
+            className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition font-semibold">
+            Back to Review
           </button>
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition font-semibold">
-            Save & Proceed
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   );
