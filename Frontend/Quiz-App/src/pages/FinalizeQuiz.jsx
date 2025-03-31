@@ -25,7 +25,7 @@ const FinalizeQuiz = () => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/api/quiz/${quizId}`)
+      .get(`http://localhost:8080/api/quiz/${quizId}/secret`)
       .then((response) => {
         console.log("API Response:", response.data); // ✅ Check this in browser console
         setSecretCode(response.data.secretCode);

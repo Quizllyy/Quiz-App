@@ -95,7 +95,7 @@ export default function ReviewQuiz() {
                       <td
                         key={oIdx}
                         className={`px-6 py-3 border ${
-                          q.correctAnswers.includes(parseInt(oIdx, 10))
+                          q.correctAnswers.includes(option)
                             ? "bg-green-100"
                             : "bg-white"
                         }`}>
@@ -103,8 +103,10 @@ export default function ReviewQuiz() {
                       </td>
                     ))
                   ) : (
-                    <td colSpan="4" className="px-6 py-3 border bg-green-100">
-                      <strong>{q.correctAnswers[0]}</strong>
+                    <td
+                      colSpan="4"
+                      className="px-6 py-3 border bg-green-100 font-bold">
+                      {q.correctAnswers[0]}
                     </td>
                   )}
                 </tr>

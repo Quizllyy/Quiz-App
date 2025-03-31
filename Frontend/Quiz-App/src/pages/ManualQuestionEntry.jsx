@@ -4,15 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 export default function ManualQuestionEntry() {
   const navigate = useNavigate();
-  // Extract quizId from URL
   const { quizId } = useParams();
-  console.log("🎯 Retrieved quizId from useParams:", quizId);
-
-  if (!quizId) {
-    console.error(
-      "❌ ERROR: quizId is undefined! Check your route. The URL should include a valid quiz ID."
-    );
-  }
 
   const [questions, setQuestions] = useState([
     { text: "", options: ["", "", "", ""], correctAnswers: [], type: "single" },
@@ -29,22 +21,33 @@ export default function ManualQuestionEntry() {
     updatedQuestions[qIndex].options[oIndex] = value;
     setQuestions(updatedQuestions);
   };
-
-  const handleCorrectAnswerChange = (qIndex, oIndex, checked) => {
+  const handleCorrectAnswerChange = (qIndex, oIndex) => {
     const updatedQuestions = [...questions];
-    if (updatedQuestions[qIndex].type === "multiple") {
-      let newCorrectAnswers = [...updatedQuestions[qIndex].correctAnswers];
-      if (checked) {
-        if (!newCorrectAnswers.includes(oIndex)) {
-          newCorrectAnswers.push(oIndex);
-        }
-      } else {
-        newCorrectAnswers = newCorrectAnswers.filter((ans) => ans !== oIndex);
-      }
-      updatedQuestions[qIndex].correctAnswers = newCorrectAnswers;
-    } else {
+
+    if (updatedQuestions[qIndex].type === "write") {
       updatedQuestions[qIndex].correctAnswers = [oIndex];
+    } else if (updatedQuestions[qIndex].type === "multiple") {
+      const selectedOption = updatedQuestions[qIndex].options[oIndex];
+      const currentAnswers = updatedQuestions[qIndex].correctAnswers || [];
+
+      if (currentAnswers.includes(selectedOption)) {
+        // Remove the option if it's already selected
+        updatedQuestions[qIndex].correctAnswers = currentAnswers.filter(
+          (opt) => opt !== selectedOption
+        );
+      } else {
+        // Add the option to correctAnswers
+        updatedQuestions[qIndex].correctAnswers = [
+          ...currentAnswers,
+          selectedOption,
+        ];
+      }
+    } else {
+      // Single correct answer type
+      const selectedOption = updatedQuestions[qIndex].options[oIndex];
+      updatedQuestions[qIndex].correctAnswers = [selectedOption];
     }
+
     setQuestions(updatedQuestions);
   };
 
@@ -52,6 +55,11 @@ export default function ManualQuestionEntry() {
     const updatedQuestions = [...questions];
     updatedQuestions[index].type = value;
     updatedQuestions[index].correctAnswers = [];
+    if (value === "write") {
+      updatedQuestions[index].options = [];
+    } else {
+      updatedQuestions[index].options = ["", "", "", ""];
+    }
     setQuestions(updatedQuestions);
   };
 
@@ -70,33 +78,44 @@ export default function ManualQuestionEntry() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const payload = { quizId, questions };
-    console.log("🚀 Sending request to backend...");
-    console.log("Request payload:", JSON.stringify(payload, null, 2));
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i];
 
-    // Validate quizId before sending
-    if (!quizId || quizId.includes("${")) {
-      console.error("❌ quizId is invalid:", quizId);
-      alert(
-        "Quiz ID is not set properly! Please navigate with a valid quiz ID in the URL."
-      );
-      return;
+      if (!q.text.trim()) {
+        alert(`❌ Question ${i + 1} cannot be empty.`);
+        return;
+      }
+
+      if (q.type !== "write") {
+        if (q.correctAnswers.length === 0) {
+          alert(`❌ Question ${i + 1} must have at least one correct answer.`);
+          return;
+        }
+        for (let option of q.options) {
+          if (!option.trim()) {
+            alert(`❌ Question ${i + 1} has an empty option.`);
+            return;
+          }
+        }
+      } else {
+        if (!q.correctAnswers[0]?.trim()) {
+          alert(`❌ Question ${i + 1} must have a valid written answer.`);
+          return;
+        }
+      }
     }
+
+    const payload = { quizId, questions };
+    console.log("🚀 Sending request to backend...", payload);
 
     try {
       const response = await axios.post(
         "http://localhost:8080/api/questions/create",
         payload
       );
-      console.log("✅ Response from backend:", response.data);
       alert(response.data.message);
-      // Instead of extracting createdQuizId from response, use the quizId from URL
       navigate(`/review-quiz/${quizId}`);
     } catch (error) {
-      console.error(
-        "❌ Error saving questions:",
-        error.response?.data || error.message
-      );
       alert(
         error.response?.data?.message ||
           "Failed to save questions. Try again later."
@@ -105,16 +124,16 @@ export default function ManualQuestionEntry() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 pt-28 pb-28 px-4">
-      <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-2xl text-center border border-gray-300">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">
+    <div className="flex flex-col items-center justify-start min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 pt-20 pb-8 px-6">
+      <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md text-center border border-gray-300">
+        <h2 className="text-xl font-bold text-gray-800 mb-4">
           Enter Questions Manually
         </h2>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {questions.map((q, qIndex) => (
             <div
               key={qIndex}
-              className="text-left border p-4 rounded-lg bg-gray-50">
+              className="text-left border p-4 rounded-md bg-gray-50 mb-4">
               <label className="block text-sm font-medium text-gray-700">
                 Question {qIndex + 1}
               </label>
@@ -123,7 +142,6 @@ export default function ManualQuestionEntry() {
                 className="w-full p-2 border rounded-md mb-3 focus:ring-2 focus:ring-blue-500 transition"
                 value={q.text}
                 onChange={(e) => handleQuestionChange(qIndex, e.target.value)}
-                placeholder="Enter your question here"
                 required
               />
               <label className="block text-sm font-medium text-gray-700">
@@ -134,67 +152,57 @@ export default function ManualQuestionEntry() {
                 value={q.type}
                 onChange={(e) => handleTypeChange(qIndex, e.target.value)}
                 required>
-                <option value="" disabled>
-                  Select Question Type
-                </option>
                 <option value="single">Single Correct</option>
                 <option value="multiple">Multiple Correct</option>
                 <option value="write">Write Answer</option>
               </select>
-              {q.type !== "write" && (
+              {q.type !== "write" ? (
+                q.options.map((option, oIndex) => (
+                  <div key={oIndex} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      className="w-full p-2 border rounded-md mb-2 focus:ring-2 focus:ring-blue-500 transition"
+                      value={option}
+                      onChange={(e) =>
+                        handleOptionChange(qIndex, oIndex, e.target.value)
+                      }
+                      required
+                    />
+                    <input
+                      type={q.type === "multiple" ? "checkbox" : "radio"}
+                      name={`correct-${qIndex}`}
+                      checked={q.correctAnswers.includes(option)}
+                      onChange={() => handleCorrectAnswerChange(qIndex, oIndex)}
+                    />
+                  </div>
+                ))
+              ) : (
                 <>
                   <label className="block text-sm font-medium text-gray-700">
-                    Options
+                    Correct Answer
                   </label>
-                  {q.options.map((option, oIndex) => (
-                    <div key={oIndex} className="flex items-center gap-2">
-                      <input
-                        type="text"
-                        className="w-full p-2 border rounded-md mb-2 focus:ring-2 focus:ring-blue-500 transition"
-                        value={option}
-                        onChange={(e) =>
-                          handleOptionChange(qIndex, oIndex, e.target.value)
-                        }
-                        placeholder={`Option ${oIndex + 1}`}
-                        required
-                      />
-                      {q.type === "multiple" ? (
-                        <input
-                          type="checkbox"
-                          checked={q.correctAnswers.includes(oIndex)}
-                          onChange={(e) =>
-                            handleCorrectAnswerChange(
-                              qIndex,
-                              oIndex,
-                              e.target.checked
-                            )
-                          }
-                        />
-                      ) : (
-                        <input
-                          type="radio"
-                          name={`correct-${qIndex}`}
-                          checked={q.correctAnswers[0] === oIndex}
-                          onChange={() =>
-                            handleCorrectAnswerChange(qIndex, oIndex, true)
-                          }
-                        />
-                      )}
-                    </div>
-                  ))}
+                  <input
+                    type="text"
+                    className="w-full p-2 border rounded-md mb-3 focus:ring-2 focus:ring-blue-500 transition"
+                    value={q.correctAnswers[0] || ""}
+                    onChange={(e) =>
+                      handleCorrectAnswerChange(qIndex, e.target.value)
+                    }
+                    required
+                  />
                 </>
               )}
             </div>
           ))}
           <button
             type="button"
-            className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700 transition font-semibold"
+            className="w-full bg-green-600 text-white py-2 rounded-md"
             onClick={addQuestion}>
             + Add Another Question
           </button>
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition font-semibold">
+            className="w-full bg-blue-600 text-white py-2 rounded-md">
             Save & Proceed
           </button>
         </form>
