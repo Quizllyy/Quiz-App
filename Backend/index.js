@@ -2,7 +2,6 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./database.js");
-const quizExcelRoutes = require("./routes/quizExcelRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -25,6 +24,8 @@ app.use("/api/questions", questionRoutes);
 const resultRoutes = require("./routes/result");
 app.use("/api/quiz", resultRoutes);
 
+const quizExcelRoutes = require("./routes/quizExcelRoutes");
+app.use("/api/excel", quizExcelRoutes);
 
 app.get("/", (req, res) => {
   res.send("Quiz App Backend is Running");

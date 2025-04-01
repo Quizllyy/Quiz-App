@@ -182,7 +182,7 @@ const Quiz = () => {
             </div>
           ))}
           <button
-            onClick={handleSubmitQuiz}
+            // onClick={handleSubmitQuiz}
             className="mt-4 px-6 py-2 bg-green-500 text-white rounded">
             Submit Quiz
           </button>

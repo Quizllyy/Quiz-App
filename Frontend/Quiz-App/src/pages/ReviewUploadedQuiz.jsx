@@ -35,7 +35,7 @@ export default function ReviewUploadedQuiz() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/excel/save-quiz",
+        "http://localhost:8080/api/excel/save-quiz",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -45,8 +45,7 @@ export default function ReviewUploadedQuiz() {
 
       const data = await response.json();
       if (data.success) {
-        alert(`Quiz saved successfully! Secret Code: ${data.secretCode}`);
-        navigate("/");
+        navigate(`/finalize-quiz/${data.quizId}`); // ✅ Redirect to FinalizeQuiz page
       } else {
         alert("Error saving quiz. Try again.");
       }
