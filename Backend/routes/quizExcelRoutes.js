@@ -43,10 +43,39 @@ router.post("/save-quiz", async (req, res) => {
       success: true,
       message: "Quiz saved successfully!",
       secretCode: quiz.secretCode,
+      quizId: quiz._id, // ✅ Include the quiz ID
     });
   } catch (error) {
     console.error("❌ Error saving quiz:", error);
     res.status(500).json({ success: false, message: "Error saving quiz", error: error.message });
+  }
+});
+
+router.get("/:quizId/secret", async (req, res) => {
+  try {
+    const { quizId } = req.params;
+    console.log("🔍 Incoming quizId:", quizId);
+
+    if (!mongoose.Types.ObjectId.isValid(quizId)) {
+      console.log("❌ Invalid ObjectId format.");
+      return res.status(400).json({ message: "Invalid quiz ID format." });
+    }
+
+    let quiz = await ExcelQuiz.findById(quizId); // First, check Excel quizzes
+    if (!quiz) {
+      quiz = await Quiz.findById(quizId); // If not found, check manually entered quizzes
+    }
+
+    if (!quiz) {
+      console.log("❌ Quiz not found in database.");
+      return res.status(404).json({ message: "Quiz not found" });
+    }
+
+    console.log("📄 Fetched Quiz:", quiz);
+    res.json({ secretCode: quiz.secretCode });
+  } catch (error) {
+    console.error("❌ Error fetching secret code:", error);
+    res.status(500).json({ message: "Server error" });
   }
 });
 

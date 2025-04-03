@@ -1,11 +1,15 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function ContactUs() {
+  const navigate = useNavigate();
+  const user = JSON.parse(sessionStorage.getItem("user")); // Check if user is logged in
+
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
+    name: user?.name || "",
+    email: user?.email || "",
     message: "",
-    access_key: process.env.REACT_APP_WEB3_API_KEY,
+    // access_key: process.env.REACT_APP_WEB3_API_KEY,
   });
 
   const [status, setStatus] = useState({ success: false, message: "" });
@@ -17,35 +21,52 @@ export default function ContactUs() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!user) {
+      alert("You must be signed in to send a message.");
+      navigate("/signin");
+      return;
+    }
     setLoading(true);
 
-    const response = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+    const formDataWithKey = {
+      ...formData,
+      access_key: process.env.REACT_APP_WEB3_API_KEY,
+      honeypot: "", // Add an empty hidden field
+    };
 
-    const result = await response.json();
-    setLoading(false);
-
-    if (result.success) {
-      setStatus({ success: true, message: "Message sent successfully!" });
-      setFormData({
-        name: "",
-        email: "",
-        message: "",
-        access_key: process.env.REACT_APP_WEB3_API_KEY,
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formDataWithKey),
       });
-    } else {
+
+      const result = await response.json();
+      setLoading(false);
+
+      if (result.success) {
+        setStatus({ success: true, message: "Message sent successfully!" });
+        setFormData({ name: "", email: "", message: "" }); // Reset form
+      } else {
+        console.error("Web3Forms error:", result);
+        setStatus({
+          success: false,
+          message: result.message || "Something went wrong. Please try again.",
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
       setStatus({
         success: false,
-        message: "Something went wrong. Please try again.",
+        message: "Network error. Please try again.",
       });
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 px-6 pt-28">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 px-6 pt-16">
       <h1 className="text-4xl font-extrabold text-gray-800 mb-6">Contact Us</h1>
       <p className="text-gray-700 mb-8 text-center max-w-lg">
         Have any questions or feedback? Fill out the form below, and we'll get
@@ -73,9 +94,8 @@ export default function ContactUs() {
               type="text"
               name="name"
               value={formData.name}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
+              className="w-full px-4 py-2 border rounded-md bg-gray-100 cursor-not-allowed"
+              readOnly
             />
           </div>
 
@@ -87,9 +107,8 @@ export default function ContactUs() {
               type="email"
               name="email"
               value={formData.email}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
+              className="w-full px-4 py-2 border rounded-md bg-gray-100 cursor-not-allowed"
+              readOnly
             />
           </div>
 

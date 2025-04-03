@@ -4,7 +4,7 @@ const ExcelQuizSchema = new mongoose.Schema({
   title: { type: String, required: true },
   numQuestions: { type: Number, required: true },
   timeLimit: { type: Number, required: true },
-  secretCode: { type: String, required: true },
+  secretCode: { type: String, required: true, unique: true },
   questions: [
     {
       questionText: { type: String, required: true },
@@ -14,4 +14,7 @@ const ExcelQuizSchema = new mongoose.Schema({
   ],
 });
 
-module.exports = mongoose.model("ExcelQuiz", ExcelQuizSchema);
+// Avoid model overwrite error
+const ExcelQuiz = mongoose.models.ExcelQuiz || mongoose.model("ExcelQuiz", ExcelQuizSchema);
+
+module.exports = ExcelQuiz;

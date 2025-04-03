@@ -1,11 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"; // Import useAuth
 
 export default function SignIn() {
   const navigate = useNavigate();
+  const { signIn } = useAuth(); // Get signIn function from AuthContext
+
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
     password: "",
+    role: "student", // Default value
     remember: false,
   });
 
@@ -14,21 +19,62 @@ export default function SignIn() {
     setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Sign In Data:", formData);
-    alert("Sign-in successful!");
-    navigate("/");
+    try {
+      const response = await fetch("http://localhost:8080/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      console.log("Full Backend Response:", data); // Debugging
+
+      if (response.ok) {
+        if (!data.user) {
+          console.error("Error: No user data received from backend!");
+          alert("Error: No user data received. Check backend response.");
+          return;
+        }
+
+        sessionStorage.setItem("token", data.token);
+        sessionStorage.setItem("user", JSON.stringify(data.user));
+
+        signIn(data.user); // ✅ Update global state
+
+        alert("Sign-in successful!");
+        navigate("/");
+      } else {
+        alert(data.message || "Sign-in failed");
+      }
+    } catch (error) {
+      console.error("Error during sign-in:", error);
+    }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 px-6">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 px-6 pt-12">
       <div className="bg-white shadow-xl rounded-2xl p-8 max-w-md w-full border border-gray-300">
         <h1 className="text-3xl font-extrabold text-gray-800 text-center mb-6">
           Sign In
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-gray-700 font-semibold mb-1">
+              Enter your full name
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
           <div>
             <label className="block text-gray-700 font-semibold mb-1">
               Email
@@ -57,20 +103,19 @@ export default function SignIn() {
             />
           </div>
 
-          <div className="flex justify-between items-center text-sm">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                name="remember"
-                checked={formData.remember}
-                onChange={handleChange}
-                className="mr-2"
-              />
-              Remember Me
+          <div>
+            <label className="block text-gray-700 font-semibold mb-8">
+              Select Role
             </label>
-            <a href="#" className="text-blue-600 hover:underline">
-              Forgot Password?
-            </a>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required>
+              <option value="student">Student</option>
+              <option value="admin">Admin</option>
+            </select>
           </div>
 
           <button
