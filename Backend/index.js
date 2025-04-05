@@ -6,8 +6,10 @@ const connectDB = require("./database.js");
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+// Connect to MongoDB
 connectDB();
 
+// Middleware
 app.use(express.json());
 app.use(cors());
 
@@ -18,27 +20,26 @@ app.use((req, res, next) => {
   next();
 });
 
-// Importing Routes
+// Routes
 const authRoutes = require("./routes/auth");
 const quizRoutes = require("./routes/quiz");
 const questionRoutes = require("./routes/questions");
-const resultRoutes = require("./routes/result");
 const quizExcelRoutes = require("./routes/quizExcelRoutes");
 const resultRoutes = require("./routes/result");
 
 
-// ✅ Fixed API Endpoints
 app.use("/api/auth", authRoutes);
-app.use("/api/quiz", quizRoutes);  // For manually entered quizzes
-app.use("/api/questions", questionRoutes);
-app.use("/api/results", resultRoutes); // 🛠️ Changed from /api/quiz to /api/results
-app.use("/api/excel", quizExcelRoutes); // For Excel-uploaded quizzes
-app.use("/api/results", resultRoutes);
+app.use("/api/quiz", quizRoutes);             // Manually created quizzes
+app.use("/api/questions", questionRoutes);    // CRUD for questions
+app.use("/api/results", resultRoutes);      // Quiz result handling
+app.use("/api/excel", quizExcelRoutes);       // Excel-uploaded quizzes
 
+// Root route
 app.get("/", (req, res) => {
-  res.send("Quiz App Backend is Running");
+  res.send("✅ Quiz App Backend is Running");
 });
 
+// Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running at: http://localhost:${PORT}`);
 });
