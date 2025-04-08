@@ -27,12 +27,11 @@ const questionRoutes = require("./routes/questions");
 const quizExcelRoutes = require("./routes/quizExcelRoutes");
 const resultRoutes = require("./routes/result");
 
-
 app.use("/api/auth", authRoutes);
-app.use("/api/quiz", quizRoutes);             // Manually created quizzes
-app.use("/api/questions", questionRoutes);    // CRUD for questions
-app.use("/api/results", resultRoutes);      // Quiz result handling
-app.use("/api/excel", quizExcelRoutes);       // Excel-uploaded quizzes
+app.use("/api/quiz", quizRoutes); // Manually created quizzes
+app.use("/api/questions", questionRoutes); // CRUD for questions
+app.use("/api/results", resultRoutes); // Quiz result handling
+app.use("/api/excel", quizExcelRoutes); // Excel-uploaded quizzes
 
 // Root route
 app.get("/", (req, res) => {

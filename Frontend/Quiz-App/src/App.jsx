@@ -17,10 +17,8 @@ import EditQuiz from "./pages/EditQuiz";
 import FinalizeQuiz from "./pages/FinalizeQuiz.jsx";
 import Quiz from "./pages/Quiz.jsx";
 import ReviewUploadedQuiz from "./pages/ReviewUploadedQuiz";
-import Result from "./pages/Result.jsx";
 import Profile from "./pages/Profile.jsx";
 import ViewResult from "./pages/ViewResult.jsx";
-import AdminResults from "./pages/AdminResults.jsx";
 import { AuthProvider } from "./context/AuthContext";
 
 function App() {
@@ -44,15 +42,13 @@ function App() {
             <Route path="/excel-upload" element={<UploadQuizExcel />} />
             <Route path="/finalize-quiz/:quizId" element={<FinalizeQuiz />} />
             <Route path="/quiz/:quizId" element={<Quiz />} />
-            <Route path="/quiz/:quizId" element={<Result />} />
             <Route path="/details" element={<Details />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signin" element={<Signin />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/review-questions" element={<ReviewUploadedQuiz />} />
-            <Route path="/quiz/:quizId/result" element={<ViewResult />} />
-            <Route path="/quiz/:quizId/result" element={<AdminResults />} />
+            <Route path="quiz/:quizId/viewresult" element={<ViewResult />} />
             <Route path="/profile" element={<Profile />} />
           </Routes>
         </div>

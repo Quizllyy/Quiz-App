@@ -11,6 +11,7 @@ const Quiz = () => {
   const [userResponses, setUserResponses] = useState({});
   const [timer, setTimer] = useState(0);
   const [quizStarted, setQuizStarted] = useState(false);
+  const user = JSON.parse(sessionStorage.getItem("user"));
 
   useEffect(() => {
     const fetchQuizData = async () => {
@@ -84,21 +85,46 @@ const Quiz = () => {
   const handleSubmitQuiz = async () => {
     if (!quizStarted) return;
     setQuizStarted(false);
-
+  
+    // Format answers as required by backend
+    const answers = questions.map((q) => {
+      const userAnswer = userResponses[q._id];
+  
+      return {
+        questionId: q._id,
+        selectedOption:
+          q.type === "write"
+            ? userAnswer || ""
+            : Array.isArray(userAnswer)
+            ? userAnswer
+            : userAnswer !== undefined
+            ? [userAnswer]
+            : [],
+      };
+    });
+  
     try {
-      const response = await fetch("http://localhost:8080/api/quiz/submit", {
+      console.log("📤 Submitting answers:", {
+        quizId,
+        userId: user?._id,
+        answers,
+      });
+    
+      const response = await fetch("http://localhost:8080/api/results/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           quizId,
-          userId: "sampleUser",
-          responses: userResponses,
+          userId: user?._id,
+          answers,
         }),
       });
-
+  
       const result = await response.json();
+  
       if (response.ok) {
-        navigate(`/quiz/${quizId}/result`, { state: { result } });
+        // ✅ Navigate correctly with state to view result
+        navigate(`/quiz/${quizId}/viewresult`, { state: { result } });
       } else {
         console.error("Quiz submission failed:", result.message);
       }
@@ -126,7 +152,8 @@ const Quiz = () => {
       {!quizStarted ? (
         <button
           onClick={handleStartQuiz}
-          className="mt-4 px-6 py-2 bg-blue-500 text-white rounded">
+          className="mt-4 px-6 py-2 bg-blue-500 text-white rounded"
+        >
           Start Quiz
         </button>
       ) : (
@@ -149,7 +176,8 @@ const Quiz = () => {
                       onClick={() =>
                         handleOptionSelect(q._id, index, "multiple")
                       }
-                      disabled={timer === 0}>
+                      disabled={timer === 0}
+                    >
                       {opt}
                     </button>
                   ))}
@@ -172,8 +200,11 @@ const Quiz = () => {
                           ? "bg-blue-500 text-white"
                           : "bg-gray-50"
                       }`}
-                      onClick={() => handleOptionSelect(q._id, index, "single")}
-                      disabled={timer === 0}>
+                      onClick={() =>
+                        handleOptionSelect(q._id, index, "single")
+                      }
+                      disabled={timer === 0}
+                    >
                       {opt}
                     </li>
                   ))}
@@ -182,8 +213,9 @@ const Quiz = () => {
             </div>
           ))}
           <button
-            onClick={handleSubmitQuiz} // ✅ Submit function added here
-            className="mt-4 px-6 py-2 bg-green-500 text-white rounded">
+            onClick={handleSubmitQuiz}
+            className="mt-6 px-6 py-2 bg-green-600 text-white rounded"
+          >
             Submit Quiz
           </button>
         </div>
