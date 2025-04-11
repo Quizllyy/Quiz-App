@@ -10,14 +10,13 @@ import Categories from "./pages/Categories.jsx";
 import Details from "./pages/Details.jsx";
 import ManualQuizEntry from "./pages/ManualEntryForm.jsx";
 import UploadQuizExcel from "./pages/UploadQuizExcel.jsx";
-import Footer from "./components/Footer.jsx";
+// import Footer from "./components/Footer.jsx";
 import ManualQuestionEntry from "./pages/ManualQuestionEntry.jsx";
 import ReviewQuiz from "./pages/ReviewQuiz.jsx";
 import EditQuiz from "./pages/EditQuiz";
 import FinalizeQuiz from "./pages/FinalizeQuiz.jsx";
 import Quiz from "./pages/Quiz.jsx";
 import ReviewUploadedQuiz from "./pages/ReviewUploadedQuiz";
-import Result from "./pages/Result.jsx";
 import Profile from "./pages/Profile.jsx";
 import ViewResult from "./pages/ViewResult.jsx";
 import AdminResults from "./pages/AdminResults.jsx";
@@ -44,7 +43,6 @@ function App() {
             <Route path="/excel-upload" element={<UploadQuizExcel />} />
             <Route path="/finalize-quiz/:quizId" element={<FinalizeQuiz />} />
             <Route path="/quiz/:quizId" element={<Quiz />} />
-            <Route path="/quiz/:quizId" element={<Result />} />
             <Route path="/details" element={<Details />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signin" element={<Signin />} />
@@ -52,7 +50,10 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/review-questions" element={<ReviewUploadedQuiz />} />
             <Route path="/quiz/:quizId/result" element={<ViewResult />} />
-            <Route path="/quiz/:quizId/result" element={<AdminResults />} />
+            <Route
+              path="/quiz/:quizId/admin-results"
+              element={<AdminResults />}
+            />
             <Route path="/profile" element={<Profile />} />
           </Routes>
         </div>

@@ -5,15 +5,11 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  // ✅ Load user from sessionStorage on page load
   useEffect(() => {
     try {
       const storedUser = sessionStorage.getItem("user");
-      console.log("Stored user in sessionStorage:", storedUser); // Debugging
-  
       if (storedUser && storedUser !== "undefined" && storedUser !== "null") {
         setUser(JSON.parse(storedUser));
-        console.log("User state updated:", JSON.parse(storedUser)); // Debugging
       } else {
         setUser(null);
       }
@@ -22,11 +18,9 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
     }
   }, []);
-  
-  
 
   const signIn = (userData) => {
-    setUser(userData); // ✅ Update state so Navbar re-renders
+    setUser(userData);
     sessionStorage.setItem("user", JSON.stringify(userData));
   };
 
@@ -43,6 +37,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);
