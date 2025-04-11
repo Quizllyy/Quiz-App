@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const Result = require("../models/result");
 const Quiz = require("../models/quiz");
 const Question = require("../models/questions");
-// const authMiddleware = require("../middleware/auth"); // Uncomment if needed
 
 const router = express.Router();
 
@@ -62,16 +61,13 @@ router.post("/submit", async (req, res) => {
 /**
  * 📌 2. Fetch All Results for a User
  */
-router.get("/user/:userId", async (req, res) => {
+router.get('/user/:userId', async (req, res) => {
     try {
-        const { userId } = req.params;
-        const results = await Result.find({ userId })
-            .populate("quizId")
-            .populate("answers.questionId");
+        const results = await Result.find({ userId: req.params.userId }).populate('quizId');
         res.json(results);
-    } catch (error) {
-        console.error("❌ Error fetching user results:", error);
-        res.status(500).json({ message: "Internal server error" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
     }
 });
 
@@ -92,7 +88,7 @@ router.get("/admin/:quizId", async (req, res) => {
 });
 
 /**
- * 📌 4. Get Specific Result by ID (Optional)
+ * 📌 4. Get Specific Result by ID
  */
 router.get("/:resultId", async (req, res) => {
     try {
@@ -112,5 +108,38 @@ router.get("/:resultId", async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 });
+
+/**
+ * 📌 5. Get Result for a Specific Quiz and User
+ */
+router.get("/quiz/:quizId", async (req, res) => {
+    const { quizId } = req.params;
+    const { userId } = req.query;
+
+    const result = await Result.findOne({ quizId, userId })
+        .populate("userId")
+        .populate("quizId")
+        .populate("answers.questionId");
+
+    if (!result) {
+        return res.status(404).json({ message: "Result not found" });
+    }
+
+    res.json(result);
+});
+
+
+router.get('/user/:userId/quiz/:quizId', async (req, res) => {
+    const { userId, quizId } = req.params;
+    try {
+        const result = await Result.findOne({ quizId, userId }).sort({ submittedAt: -1 });
+
+        if (!result) return res.status(404).json({ error: 'Result not found' });
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 
 module.exports = router;

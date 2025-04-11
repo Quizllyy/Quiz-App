@@ -13,33 +13,25 @@ connectDB();
 app.use(express.json());
 app.use(cors());
 
-// Logging Middleware
+// Logging
 app.use((req, res, next) => {
-  console.log(`📩 Incoming Request: ${req.method} ${req.url}`);
-  if (req.method !== "GET") console.log("🔍 Request Body:", req.body);
+  console.log(`📩 ${req.method} ${req.url}`);
+  if (req.method !== "GET") console.log("🔍", req.body);
   next();
 });
 
 // Routes
-const authRoutes = require("./routes/auth");
-const quizRoutes = require("./routes/quiz");
-const questionRoutes = require("./routes/questions");
-const quizExcelRoutes = require("./routes/quizExcelRoutes");
-const resultRoutes = require("./routes/result");
+app.use("/api/auth", require("./routes/auth"));
+app.use("/api/quiz", require("./routes/quiz"));
+app.use("/api/questions", require("./routes/questions"));
+app.use("/api/excel", require("./routes/quizExcelRoutes"));
+app.use("/api/results", require("./routes/result")); // ✅ Use "results"
 
-
-app.use("/api/auth", authRoutes);
-app.use("/api/quiz", quizRoutes);             // Manually created quizzes
-app.use("/api/questions", questionRoutes);    // CRUD for questions
-app.use("/api/results", resultRoutes);      // Quiz result handling
-app.use("/api/excel", quizExcelRoutes);       // Excel-uploaded quizzes
-
-// Root route
+// Root
 app.get("/", (req, res) => {
   res.send("✅ Quiz App Backend is Running");
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Server running at: http://localhost:${PORT}`);
-});
+app.listen(PORT, () =>
+  console.log(`🚀 Server running at: http://localhost:${PORT}`)
+);
