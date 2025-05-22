@@ -9,19 +9,37 @@ const CaptchaPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     try {
-      const response = await axios.post(
+      const trimmedCode = code.trim();
+
+      // First try verifying for a manually created quiz
+      let response = await axios.post(
         "http://localhost:8080/api/quiz/verify-secret-code",
-        { secretCode: code.trim() }
+        { secretCode: trimmedCode }
       );
 
       if (response.data.valid) {
-        navigate(`/quiz/${response.data.quizId}`);
+        // Manual quiz matched
+        navigate(`/quiz/${response.data.quizId}?type=manual`);
+        return;
+      }
+
+      // If manual not found, try Excel quiz
+      response = await axios.post(
+        "http://localhost:8080/api/excel/verify-secret-code",
+        { secretCode: trimmedCode }
+      );
+
+      if (response.data.valid) {
+        // Excel quiz matched
+        navigate(`/quiz/${response.data.quizId}?type=excel`);
       } else {
         setError("Invalid code. Please try again.");
       }
-    } catch (error) {
-      console.error("Error verifying secret code:", error);
+    } catch (err) {
+      console.error("Error verifying secret code:", err);
       setError("An error occurred. Please try again later.");
     }
   };

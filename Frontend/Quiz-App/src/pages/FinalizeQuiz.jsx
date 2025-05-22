@@ -10,30 +10,48 @@ const FinalizeQuiz = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios
-      .get(`/api/quizzes/${quizId}`)
+    setLoading(true);
+    setError(null);
+
+    // Fetch secret code based on quizId for manual quiz first
+    fetchManualQuizSecret()
       .then((response) => {
         setSecretCode(response.data.secretCode);
         setLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching quiz data:", error);
-        setError("Failed to fetch secret code.");
-        setLoading(false);
+        // Log the error for better debugging
+        console.error(
+          "Error fetching manual quiz secret:",
+          error.response ? error.response.data : error.message
+        );
+
+        // If manual quiz secret code not found, proceed to fetch for Excel quiz
+        fetchExcelQuizSecret()
+          .then((response) => {
+            setSecretCode(response.data.secretCode);
+            setLoading(false);
+          })
+          .catch((error) => {
+            console.error(
+              "Error fetching secret code:",
+              error.response ? error.response.data : error.message
+            );
+            setError("Failed to fetch secret code.");
+            setLoading(false);
+          });
       });
   }, [quizId]);
 
-  useEffect(() => {
-    axios
-      .get(`http://localhost:8080/api/quiz/${quizId}/secret`)
-      .then((response) => {
-        console.log("API Response:", response.data); // ✅ Check this in browser console
-        setSecretCode(response.data.secretCode);
-      })
-      .catch((error) => {
-        console.error("Error fetching secret code:", error);
-      });
-  }, [quizId]);
+  // Function to fetch secret code for manually updated quiz
+  const fetchManualQuizSecret = () => {
+    return axios.get(`http://localhost:8080/api/quiz/${quizId}/secret`);
+  };
+
+  // Function to fetch secret code for Excel quiz
+  const fetchExcelQuizSecret = () => {
+    return axios.get(`http://localhost:8080/api/excel/${quizId}/secret`);
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200">

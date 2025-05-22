@@ -24,8 +24,8 @@ app.use((req, res, next) => {
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/quiz", require("./routes/quiz"));
 app.use("/api/questions", require("./routes/questions"));
-app.use("/api/excel", require("./routes/quizExcelRoutes"));
-app.use("/api/results", require("./routes/result")); // ✅ Use "results"
+app.use("/api/excel", require("./routes/excelQuizRoutes.js"));
+app.use("/api/results", require("./routes/result"));
 
 // Root
 app.get("/", (req, res) => {

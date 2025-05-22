@@ -9,7 +9,6 @@ exports.submitResult = async (req, res) => {
             return res.status(400).json({ message: "Invalid data submitted" });
         }
 
-        // Optional: Basic scoring logic (assumes answers are indices)
         const quiz = await Quiz.findById(quizId).populate("questions");
         let score = 0;
 

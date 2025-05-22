@@ -7,10 +7,9 @@ const authMiddleware = (requiredRoles = []) => {
     if (!token) return res.status(401).json({ message: "Access Denied" });
 
     try {
-      const verified = jwt.verify(token, "SECRET_KEY"); // Ensure you use the correct secret key
-      req.user = verified; // Store user info in request object
+      const verified = jwt.verify(token, "SECRET_KEY");
+      req.user = verified;
 
-      // Check if the user's role is allowed
       if (requiredRoles.length && !requiredRoles.includes(req.user.role)) {
         return res.status(403).json({ message: "Forbidden: Access Denied" });
       }
