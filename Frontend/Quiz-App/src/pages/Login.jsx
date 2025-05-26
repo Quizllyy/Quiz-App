@@ -10,6 +10,7 @@ export default function Login() {
     password: "",
     remember: false,
   });
+  const baseURL = process.env.REACT_APP_API_BASE_URL;
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -20,7 +21,7 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8080/api/auth/login", {
+      const response = await fetch(`${baseURL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -83,8 +84,7 @@ export default function Login() {
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition font-semibold"
-          >
+            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition font-semibold">
             Login
           </button>
         </form>

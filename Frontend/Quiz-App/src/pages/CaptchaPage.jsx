@@ -6,6 +6,7 @@ const CaptchaPage = () => {
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const baseURL = process.env.REACT_APP_API_BASE_URL;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,7 +17,7 @@ const CaptchaPage = () => {
 
       // First try verifying for a manually created quiz
       let response = await axios.post(
-        "http://localhost:8080/api/quiz/verify-secret-code",
+        `${baseURL}/api/quiz/verify-secret-code`,
         { secretCode: trimmedCode }
       );
 
@@ -27,10 +28,9 @@ const CaptchaPage = () => {
       }
 
       // If manual not found, try Excel quiz
-      response = await axios.post(
-        "http://localhost:8080/api/excel/verify-secret-code",
-        { secretCode: trimmedCode }
-      );
+      response = await axios.post(`${baseURL}/api/excel/verify-secret-code`, {
+        secretCode: trimmedCode,
+      });
 
       if (response.data.valid) {
         // Excel quiz matched

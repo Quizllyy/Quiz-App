@@ -8,6 +8,7 @@ const ViewResult = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const userId = user?._id || user?.id;
+  const baseURL = process.env.REACT_APP_API_BASE_URL;
 
   const [result, setResult] = useState(location.state?.result || null);
   const [quiz, setQuiz] = useState(null);
@@ -19,10 +20,8 @@ const ViewResult = () => {
     const fetchResultsAndQuiz = async () => {
       try {
         const [resultRes, quizRes] = await Promise.all([
-          fetch(
-            `http://localhost:8080/api/results/quiz/${quizId}?userId=${userId}`
-          ),
-          fetch(`http://localhost:8080/api/quiz/${quizId}`),
+          fetch(`${baseURL}/api/results/quiz/${quizId}?userId=${userId}`),
+          fetch(`${baseURL}/api/quiz/${quizId}`),
         ]);
 
         const resultData = await resultRes.json();

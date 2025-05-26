@@ -8,14 +8,13 @@ export default function ReviewQuiz() {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const baseURL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     async function fetchQuestions() {
       try {
         if (!quizId) return;
-        const response = await axios.get(
-          `http://localhost:8080/api/questions/${quizId}`
-        );
+        const response = await axios.get(`${baseURL}/api/questions/${quizId}`);
 
         if (response.data?.questions) {
           setQuestions(response.data.questions);

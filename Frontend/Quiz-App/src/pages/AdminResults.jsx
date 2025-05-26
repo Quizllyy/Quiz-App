@@ -4,9 +4,10 @@ import { useParams } from "react-router-dom";
 const AdminResults = () => {
   const { quizId } = useParams();
   const [results, setResults] = useState([]);
+  const baseURL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/results/admin/${quizId}`)
+    fetch(`${baseURL}/api/results/admin/${quizId}`)
       .then((res) => res.json())
       .then((data) => setResults(data))
       .catch((err) => console.error("Error fetching admin results:", err));

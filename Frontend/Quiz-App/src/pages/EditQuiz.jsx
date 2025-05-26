@@ -8,13 +8,12 @@ export default function EditQuiz() {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const baseURL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8080/api/quiz/${quizId}`
-        );
+        const response = await axios.get(`${baseURL}/api/quiz/${quizId}`);
         setQuestions(response.data.questions);
         setLoading(false);
       } catch (error) {
@@ -60,10 +59,9 @@ export default function EditQuiz() {
     try {
       console.log("🟢 Sending to API:", JSON.stringify({ questions }, null, 2));
 
-      const response = await axios.put(
-        `http://localhost:8080/api/quiz/${quizId}`,
-        { questions }
-      );
+      const response = await axios.put(`${baseURL}/api/quiz/${quizId}`, {
+        questions,
+      });
 
       console.log("✅ API Response:", response.data);
 

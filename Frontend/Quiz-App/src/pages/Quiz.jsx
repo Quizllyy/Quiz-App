@@ -16,13 +16,12 @@ const Quiz = () => {
   const [timer, setTimer] = useState(0);
   const [quizStarted, setQuizStarted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const baseURL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     const fetchQuizData = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:8080/api/quiz/${quizId}`
-        );
+        const response = await fetch(`${baseURL}/api/quiz/${quizId}`);
         const data = await response.json();
 
         if (!data.quiz || !data.questions)
@@ -112,7 +111,7 @@ const Quiz = () => {
     });
 
     try {
-      const response = await fetch("http://localhost:8080/api/results/submit", {
+      const response = await fetch(`${baseURL}/api/results/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

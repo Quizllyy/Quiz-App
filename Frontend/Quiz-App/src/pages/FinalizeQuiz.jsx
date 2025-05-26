@@ -8,6 +8,7 @@ const FinalizeQuiz = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const baseURL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     setLoading(true);
@@ -45,12 +46,12 @@ const FinalizeQuiz = () => {
 
   // Function to fetch secret code for manually updated quiz
   const fetchManualQuizSecret = () => {
-    return axios.get(`http://localhost:8080/api/quiz/${quizId}/secret`);
+    return axios.get(`${baseURL}/api/quiz/${quizId}/secret`);
   };
 
   // Function to fetch secret code for Excel quiz
   const fetchExcelQuizSecret = () => {
-    return axios.get(`http://localhost:8080/api/excel/${quizId}/secret`);
+    return axios.get(`${baseURL}/api/excel/${quizId}/secret`);
   };
 
   return (
