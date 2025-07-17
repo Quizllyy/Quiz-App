@@ -43,7 +43,7 @@ export default function ManualQuizEntry() {
 
     try {
       const response = await axios.post(
-        `${baseURL}/api/quiz/create`,
+        `http://localhost:8080/api/quiz/create`,
         quizDetails
       );
 

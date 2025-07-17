@@ -46,12 +46,12 @@ const FinalizeQuiz = () => {
 
   // Function to fetch secret code for manually updated quiz
   const fetchManualQuizSecret = () => {
-    return axios.get(`${baseURL}/api/quiz/${quizId}/secret`);
+    return axios.get(`http://localhost:8080/api/quiz/${quizId}/secret`);
   };
 
   // Function to fetch secret code for Excel quiz
   const fetchExcelQuizSecret = () => {
-    return axios.get(`${baseURL}/api/excel/${quizId}/secret`);
+    return axios.get(`http://localhost:8080/api/excel/${quizId}/secret`);
   };
 
   return (

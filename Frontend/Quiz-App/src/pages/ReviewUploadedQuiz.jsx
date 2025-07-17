@@ -35,11 +35,14 @@ export default function ReviewUploadedQuiz() {
     };
 
     try {
-      const response = await fetch(`${baseURL}/api/excel/save-quiz`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(quizPayload),
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/excel/save-quiz`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(quizPayload),
+        }
+      );
 
       const data = await response.json();
       if (data.success) {

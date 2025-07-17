@@ -8,7 +8,6 @@ const ViewResult = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const userId = user?._id || user?.id;
-  const baseURL = process.env.REACT_APP_API_BASE_URL;
 
   const [result, setResult] = useState(location.state?.result || null);
   const [quiz, setQuiz] = useState(null);
@@ -20,12 +19,16 @@ const ViewResult = () => {
     const fetchResultsAndQuiz = async () => {
       try {
         const [resultRes, quizRes] = await Promise.all([
-          fetch(`${baseURL}/api/results/quiz/${quizId}?userId=${userId}`),
-          fetch(`${baseURL}/api/quiz/${quizId}`),
+          fetch(
+            `http://localhost:8080/api/results/quiz/${quizId}?userId=${userId}`
+          ),
+          fetch(`http://localhost:8080/api/quiz/${quizId}`),
         ]);
 
         const resultData = await resultRes.json();
         const quizData = await quizRes.json();
+
+        console.log(resultData, quizData);
 
         if (!resultData || !quizData.quiz || !quizData.questions) {
           throw new Error("Result or Quiz data not found.");
@@ -34,35 +37,32 @@ const ViewResult = () => {
         setResult(resultData);
         setQuiz({ ...quizData.quiz, questions: quizData.questions });
 
+        // Calculate score
         let calculatedScore = 0;
-
-        resultData.answers.forEach((answer) => {
-          const question = quizData.questions.find(
-            (q) =>
-              q._id === answer.questionId || q._id === answer.questionId?._id
-          );
+        resultData.answers.forEach((answer, idx) => {
+          const question = quizData.questions[idx];
           if (!question) return;
 
           const selected = answer.selectedOption;
-          const correct = question.correctAnswers || [];
+          const correct =
+            question.correctAnswers || question.correctAnswer || [];
 
-          let isCorrect = false;
+          const normalize = (val) => {
+            if (Array.isArray(val)) {
+              return val.map((v) => String(v).trim().toLowerCase()).sort();
+            } else {
+              return [String(val).trim().toLowerCase()];
+            }
+          };
 
-          if (question.type === "single") {
-            isCorrect = correct.includes(selected);
-          } else if (question.type === "multiple") {
-            isCorrect =
-              Array.isArray(selected) &&
-              selected.length === correct.length &&
-              selected.every((opt) => correct.includes(opt));
-          } else if (question.type === "write") {
-            const normalized =
-              typeof selected === "string" ? selected.trim().toLowerCase() : "";
-            const correctNormalized = correct.map((ans) =>
-              typeof ans === "string" ? ans.trim().toLowerCase() : ""
+          const normalizedSelected = normalize(selected);
+          const normalizedCorrect = normalize(correct);
+
+          const isCorrect =
+            normalizedSelected.length === normalizedCorrect.length &&
+            normalizedSelected.every(
+              (val, index) => val === normalizedCorrect[index]
             );
-            isCorrect = correctNormalized.includes(normalized);
-          }
 
           if (isCorrect) calculatedScore++;
         });
@@ -92,6 +92,14 @@ const ViewResult = () => {
   if (!result || !quiz)
     return <p className="text-center">No result available.</p>;
 
+  const normalize = (val) => {
+    if (Array.isArray(val)) {
+      return val.map((v) => String(v).trim().toLowerCase()).sort();
+    } else {
+      return [String(val).trim().toLowerCase()];
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-200 py-20 px-4">
       <div className="max-w-3xl mx-auto bg-white shadow-md rounded p-6">
@@ -106,45 +114,43 @@ const ViewResult = () => {
         <h3 className="mt-6 font-semibold text-lg">Detailed Answers:</h3>
         <div className="mt-4 space-y-6">
           {quiz.questions.map((q, idx) => {
-            const userAnswer = result.answers.find(
-              (a) => a.questionId === q._id || a.questionId?._id === q._id
-            );
+            const userAnswer = result.answers[idx];
             const selected = userAnswer?.selectedOption;
             const attempted =
               selected !== null &&
+              selected !== undefined &&
               selected !== "" &&
               !(Array.isArray(selected) && selected.length === 0);
-            const correct = q.correctAnswers || [];
+            let correct = [];
 
-            let isCorrect = false;
-            if (attempted) {
-              if (q.type === "single") {
-                isCorrect = correct.includes(selected);
-              } else if (q.type === "multiple") {
-                isCorrect =
-                  Array.isArray(selected) &&
-                  selected.length === correct.length &&
-                  selected.every((opt) => correct.includes(opt));
-              } else if (q.type === "write") {
-                const normalized =
-                  typeof selected === "string"
-                    ? selected.trim().toLowerCase()
-                    : "";
-                const correctNormalized = correct.map((ans) =>
-                  typeof ans === "string" ? ans.trim().toLowerCase() : ""
-                );
-                isCorrect = correctNormalized.includes(normalized);
-              }
+            if (Array.isArray(q.correctAnswers)) {
+              correct = q.correctAnswers;
+            } else if (typeof q.correctAnswer === "string") {
+              correct = q.correctAnswer.split(",").map((opt) => opt.trim());
+            } else if (Array.isArray(q.correctAnswer)) {
+              correct = q.correctAnswer;
+            } else if (typeof q.correctAnswer === "number") {
+              correct = [String(q.correctAnswer)];
             }
+
+            const normalizedSelected = normalize(selected);
+            const normalizedCorrect = normalize(correct);
+
+            const isCorrect =
+              attempted &&
+              normalizedSelected.length === normalizedCorrect.length &&
+              normalizedSelected.every((val) =>
+                normalizedCorrect.includes(val)
+              );
 
             const userValue = attempted
               ? Array.isArray(selected)
-                ? selected.join(", ")
+                ? selected.sort().join(", ")
                 : selected
               : "Not answered";
 
             const correctValue = Array.isArray(correct)
-              ? correct.join(", ")
+              ? correct.sort().join(", ")
               : correct;
 
             return (

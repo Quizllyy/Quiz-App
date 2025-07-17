@@ -14,7 +14,9 @@ export default function ReviewQuiz() {
     async function fetchQuestions() {
       try {
         if (!quizId) return;
-        const response = await axios.get(`${baseURL}/api/questions/${quizId}`);
+        const response = await axios.get(
+          `http://localhost:8080/api/questions/${quizId}`
+        );
 
         if (response.data?.questions) {
           setQuestions(response.data.questions);
