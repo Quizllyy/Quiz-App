@@ -8,6 +8,7 @@ const FinalizeQuiz = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const baseURL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     setLoading(true);

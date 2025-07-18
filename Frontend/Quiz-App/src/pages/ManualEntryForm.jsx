@@ -11,6 +11,7 @@ export default function ManualQuizEntry() {
     secretCode: "",
   });
   const [error, setError] = useState("");
+  const baseURL = process.env.REACT_APP_API_BASE_URL;
 
   // Function to generate a random alphanumeric string
   function generateSecretCode(length = 8) {
@@ -42,7 +43,7 @@ export default function ManualQuizEntry() {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/quiz/create",
+        `http://localhost:8080/api/quiz/create`,
         quizDetails
       );
 

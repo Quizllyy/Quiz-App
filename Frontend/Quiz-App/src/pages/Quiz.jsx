@@ -16,6 +16,7 @@ const Quiz = () => {
   const [timer, setTimer] = useState(0);
   const [quizStarted, setQuizStarted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const baseURL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     const fetchQuizData = async () => {
@@ -23,6 +24,7 @@ const Quiz = () => {
         const response = await fetch(
           `http://localhost:8080/api/quiz/${quizId}`
         );
+
         const data = await response.json();
 
         if (!data.quiz || !data.questions)
@@ -112,15 +114,19 @@ const Quiz = () => {
     });
 
     try {
-      const response = await fetch("http://localhost:8080/api/results/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          quizId,
-          userId,
-          answers: formattedAnswers,
-        }),
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/results/submit
+`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            quizId,
+            userId,
+            answers: formattedAnswers,
+          }),
+        }
+      );
 
       const result = await response.json();
       if (!response.ok) throw new Error(result.message || "Submission failed");
@@ -237,3 +243,5 @@ const Quiz = () => {
 };
 
 export default Quiz;
+
+// F0VE3B

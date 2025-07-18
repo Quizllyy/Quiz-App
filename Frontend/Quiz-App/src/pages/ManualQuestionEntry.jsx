@@ -9,6 +9,7 @@ export default function ManualQuestionEntry() {
   const [questions, setQuestions] = useState([
     { text: "", options: ["", "", "", ""], correctAnswers: [], type: "single" },
   ]);
+  const baseURL = process.env.REACT_APP_API_BASE_URL;
 
   const handleQuestionChange = (index, value) => {
     const updatedQuestions = [...questions];
@@ -110,7 +111,7 @@ export default function ManualQuestionEntry() {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/questions/create",
+        `http://localhost:8080/api/questions/create`,
         payload
       );
       alert(response.data.message);

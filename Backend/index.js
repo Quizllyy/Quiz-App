@@ -21,6 +21,7 @@ app.use((req, res, next) => {
 });
 
 // Routes
+app.use("/api/verify", require("./routes/verify"));
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/quiz", require("./routes/quiz"));
 app.use("/api/questions", require("./routes/questions"));

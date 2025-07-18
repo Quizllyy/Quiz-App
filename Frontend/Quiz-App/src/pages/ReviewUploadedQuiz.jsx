@@ -6,6 +6,7 @@ export default function ReviewUploadedQuiz() {
   const [quizData, setQuizData] = useState([]);
   const [quizTitle, setQuizTitle] = useState(""); // New state for title
   const [timeLimit, setTimeLimit] = useState(""); // State for time limit
+  const baseURL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     const storedData = localStorage.getItem("quizData");
@@ -35,7 +36,7 @@ export default function ReviewUploadedQuiz() {
 
     try {
       const response = await fetch(
-        "http://localhost:8080/api/excel/save-quiz",
+        `http://localhost:8080/api/excel/save-quiz`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

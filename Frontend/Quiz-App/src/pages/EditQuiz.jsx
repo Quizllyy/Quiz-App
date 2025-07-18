@@ -8,6 +8,7 @@ export default function EditQuiz() {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const baseURL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -62,7 +63,9 @@ export default function EditQuiz() {
 
       const response = await axios.put(
         `http://localhost:8080/api/quiz/${quizId}`,
-        { questions }
+        {
+          questions,
+        }
       );
 
       console.log("✅ API Response:", response.data);

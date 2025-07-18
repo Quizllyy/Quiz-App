@@ -4,8 +4,48 @@ const mongoose = require("mongoose");
 const Quiz = require("../models/quiz");
 const Question = require("../models/questions");
 
+const ExcelQuiz = require("../models/excelQuizSchema");
+
 
 // ✅ Create a new quiz
+router.get("/:quizId", async (req, res) => {
+    const { quizId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(quizId)) {
+        return res.status(400).json({ message: "Invalid quiz ID format." });
+    }
+
+    try {
+        // 1. Manual quiz
+        let quiz = await Quiz.findById(quizId).select("-secretCode");
+        let questions;
+
+        if (quiz) {
+            questions = await Question.find({ quizId }).select("-correctAnswer");
+            return res.json({ quiz, questions, type: "manual" });
+        }
+
+        // 2. Excel quiz
+        quiz = await ExcelQuiz.findById(quizId).select("-secretCode");
+        if (quiz) {
+            questions = quiz.questions.map((q) => ({
+                _id: q._id,
+                text: q.questionText,
+                options: q.options,
+                type: q.type,
+                correctAnswers: Array.isArray(q.correctAnswer)
+                    ? q.correctAnswer
+                    : [q.correctAnswer],
+            }));
+            return res.json({ quiz, questions, type: "excel" });
+        }
+
+        return res.status(404).json({ message: "Quiz not found." });
+    } catch (err) {
+        console.error("Error fetching quiz:", err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
 router.post("/create", async (req, res) => {
     try {
         const { title, numQuestions, timeLimit, secretCode } = req.body;
@@ -59,29 +99,64 @@ router.post("/submit", async (req, res) => {
 });
 
 // ✅ Route 1: Fetch Quiz & Questions (Without Secret Code)
+// router.get("/:quizId", async (req, res) => {
+//     try {
+//         const { quizId } = req.params;
+
+//         if (!mongoose.Types.ObjectId.isValid(quizId)) {
+//             return res.status(400).json({ message: "Invalid quiz ID format." });
+//         }
+
+//         const quiz = await Quiz.findById(quizId).select("-secretCode");
+//         if (!quiz) {
+//             return res.status(404).json({ message: "Quiz not found" });
+//         }
+
+//         const questions = await Question.find({ quizId }).select("-correctAnswer");
+
+//         console.log("Final API Response:", { quiz, questions });
+
+//         res.json({ quiz, questions });
+//     } catch (error) {
+//         console.error("Error fetching quiz:", error);
+//         res.status(500).json({ message: "Server error" });
+//     }
+// });
+
+// const Quiz = require("../models/quiz");
+// const Question = require("../models/questions");
+
 router.get("/:quizId", async (req, res) => {
+    const { quizId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(quizId)) {
+        return res.status(400).json({ message: "Invalid quiz ID format." });
+    }
+
     try {
-        const { quizId } = req.params;
+        // 1. Try manual quiz
+        let quiz = await Quiz.findById(quizId).select("-secretCode");
+        let questions;
 
-        if (!mongoose.Types.ObjectId.isValid(quizId)) {
-            return res.status(400).json({ message: "Invalid quiz ID format." });
+        if (quiz) {
+            questions = await Question.find({ quizId }).select("-correctAnswer");
+            return res.json({ quiz, questions, type: "manual" });
         }
 
-        const quiz = await Quiz.findById(quizId).select("-secretCode");
-        if (!quiz) {
-            return res.status(404).json({ message: "Quiz not found" });
+        // 2. Try Excel quiz
+        quiz = await ExcelQuiz.findById(quizId).select("-secretCode");
+        if (quiz) {
+            questions = await ExcelQuestion.find({ quizId }).select("-correctAnswers");
+            return res.json({ quiz, questions, type: "excel" });
         }
 
-        const questions = await Question.find({ quizId }).select("-correctAnswer");
-
-        console.log("Final API Response:", { quiz, questions });
-
-        res.json({ quiz, questions });
-    } catch (error) {
-        console.error("Error fetching quiz:", error);
+        return res.status(404).json({ message: "Quiz not found." });
+    } catch (err) {
+        console.error("Error fetching quiz:", err);
         res.status(500).json({ message: "Server error" });
     }
 });
+
 
 // ✅ Route 2: Fetch Secret Code
 router.get("/:quizId/secret", async (req, res) => {
