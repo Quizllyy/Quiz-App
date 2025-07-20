@@ -111,7 +111,7 @@ export default function ManualQuestionEntry() {
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/questions/create`,
+        `https://quiz-app-vrxp.onrender.com/api/questions/create`,
         payload
       );
       alert(response.data.message);
@@ -134,7 +134,8 @@ export default function ManualQuestionEntry() {
           {questions.map((q, qIndex) => (
             <div
               key={qIndex}
-              className="text-left border p-4 rounded-md bg-gray-50 mb-4">
+              className="text-left border p-4 rounded-md bg-gray-50 mb-4"
+            >
               <label className="block text-sm font-medium text-gray-700">
                 Question {qIndex + 1}
               </label>
@@ -152,7 +153,8 @@ export default function ManualQuestionEntry() {
                 className="w-full p-2 border rounded-md mb-3 focus:ring-2 focus:ring-blue-500 transition"
                 value={q.type}
                 onChange={(e) => handleTypeChange(qIndex, e.target.value)}
-                required>
+                required
+              >
                 <option value="single">Single Correct</option>
                 <option value="multiple">Multiple Correct</option>
                 <option value="write">Write Answer</option>
@@ -198,12 +200,14 @@ export default function ManualQuestionEntry() {
           <button
             type="button"
             className="w-full bg-green-600 text-white py-2 rounded-md"
-            onClick={addQuestion}>
+            onClick={addQuestion}
+          >
             + Add Another Question
           </button>
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-md">
+            className="w-full bg-blue-600 text-white py-2 rounded-md"
+          >
             Save & Proceed
           </button>
         </form>

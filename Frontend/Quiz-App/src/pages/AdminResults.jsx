@@ -7,7 +7,7 @@ const AdminResults = () => {
   const baseURL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/results/admin/${quizId}`)
+    fetch(`https://quiz-app-vrxp.onrender.com/api/results/admin/${quizId}`)
       .then((res) => res.json())
       .then((data) => setResults(data))
       .catch((err) => console.error("Error fetching admin results:", err));

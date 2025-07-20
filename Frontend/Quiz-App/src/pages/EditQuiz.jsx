@@ -14,7 +14,7 @@ export default function EditQuiz() {
     const fetchQuiz = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/quiz/${quizId}`
+          `https://quiz-app-vrxp.onrender.com/api/quiz/${quizId}`
         );
         setQuestions(response.data.questions);
         setLoading(false);
@@ -62,7 +62,7 @@ export default function EditQuiz() {
       console.log("🟢 Sending to API:", JSON.stringify({ questions }, null, 2));
 
       const response = await axios.put(
-        `http://localhost:8080/api/quiz/${quizId}`,
+        `https://quiz-app-vrxp.onrender.com/api/quiz/${quizId}`,
         {
           questions,
         }
@@ -118,7 +118,8 @@ export default function EditQuiz() {
             <select
               value={question.type}
               onChange={(e) => handleChange(index, "type", e.target.value)}
-              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
               <option value="single">Single Correct</option>
               <option value="multiple">Multiple Correct</option>
               <option value="write">Write Answer</option>
@@ -188,7 +189,8 @@ export default function EditQuiz() {
         <div className="flex justify-end mt-8">
           <button
             onClick={handleSave}
-            className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition font-semibold">
+            className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition font-semibold"
+          >
             Save Changes
           </button>
         </div>

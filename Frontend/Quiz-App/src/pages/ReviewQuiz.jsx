@@ -15,7 +15,7 @@ export default function ReviewQuiz() {
       try {
         if (!quizId) return;
         const response = await axios.get(
-          `http://localhost:8080/api/questions/${quizId}`
+          `https://quiz-app-vrxp.onrender.com/api/questions/${quizId}`
         );
 
         if (response.data?.questions) {
@@ -99,14 +99,16 @@ export default function ReviewQuiz() {
                           q.correctAnswers.includes(option)
                             ? "bg-green-100"
                             : "bg-white"
-                        }`}>
+                        }`}
+                      >
                         {option}
                       </td>
                     ))
                   ) : (
                     <td
                       colSpan="4"
-                      className="px-6 py-3 border bg-green-100 font-bold">
+                      className="px-6 py-3 border bg-green-100 font-bold"
+                    >
                       {q.correctAnswers[0]}
                     </td>
                   )}
@@ -118,12 +120,14 @@ export default function ReviewQuiz() {
         <div className="flex justify-between mt-8">
           <button
             onClick={handleEditQuiz}
-            className="bg-gray-500 text-white px-6 py-3 rounded-md hover:bg-gray-600 transition font-semibold">
+            className="bg-gray-500 text-white px-6 py-3 rounded-md hover:bg-gray-600 transition font-semibold"
+          >
             Edit Quiz
           </button>
           <button
             onClick={() => navigate(`/finalize-quiz/${quizId}`)}
-            className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition font-semibold">
+            className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition font-semibold"
+          >
             Finalize Quiz
           </button>
         </div>

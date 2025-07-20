@@ -43,7 +43,7 @@ export default function ManualQuizEntry() {
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/quiz/create`,
+        `https://quiz-app-vrxp.onrender.com/api/quiz/create`,
         quizDetails
       );
 
@@ -104,7 +104,8 @@ export default function ManualQuizEntry() {
           />
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition font-semibold">
+            className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition font-semibold"
+          >
             Proceed to Question Entry
           </button>
         </form>

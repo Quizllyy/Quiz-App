@@ -36,7 +36,7 @@ export default function ReviewUploadedQuiz() {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/excel/save-quiz`,
+        `https://quiz-app-vrxp.onrender.com/api/excel/save-quiz`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -118,7 +118,8 @@ export default function ReviewUploadedQuiz() {
         {/* Save Quiz Button */}
         <button
           onClick={handleSaveQuiz}
-          className="mt-6 bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 transition">
+          className="mt-6 bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 transition"
+        >
           Finalize & Save Quiz
         </button>
       </div>

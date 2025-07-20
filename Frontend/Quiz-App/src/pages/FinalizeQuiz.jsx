@@ -46,12 +46,16 @@ const FinalizeQuiz = () => {
 
   // Function to fetch secret code for manually updated quiz
   const fetchManualQuizSecret = () => {
-    return axios.get(`http://localhost:8080/api/quiz/${quizId}/secret`);
+    return axios.get(
+      `https://quiz-app-vrxp.onrender.com/api/quiz/${quizId}/secret`
+    );
   };
 
   // Function to fetch secret code for Excel quiz
   const fetchExcelQuizSecret = () => {
-    return axios.get(`http://localhost:8080/api/excel/${quizId}/secret`);
+    return axios.get(
+      `https://quiz-app-vrxp.onrender.com/api/excel/${quizId}/secret`
+    );
   };
 
   return (
@@ -74,7 +78,8 @@ const FinalizeQuiz = () => {
             </div>
             <button
               onClick={() => navigate("/")}
-              className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition font-semibold">
+              className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition font-semibold"
+            >
               Back to Dashboard
             </button>
           </>

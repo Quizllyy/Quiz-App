@@ -15,7 +15,7 @@ const CaptchaPage = () => {
     try {
       const trimmedCode = code.trim();
       const response = await axios.post(
-        `http://localhost:8080/api/verify/secret-code`,
+        `https://quiz-app-vrxp.onrender.com/api/verify/secret-code`,
         {
           secretCode: trimmedCode,
         }
@@ -57,7 +57,8 @@ const CaptchaPage = () => {
           {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 mt-4 rounded-md hover:bg-blue-700 transition font-semibold">
+            className="w-full bg-blue-600 text-white py-2 mt-4 rounded-md hover:bg-blue-700 transition font-semibold"
+          >
             Verify & Continue
           </button>
         </form>

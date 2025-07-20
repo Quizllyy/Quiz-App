@@ -20,9 +20,9 @@ const ViewResult = () => {
       try {
         const [resultRes, quizRes] = await Promise.all([
           fetch(
-            `http://localhost:8080/api/results/quiz/${quizId}?userId=${userId}`
+            `https://quiz-app-vrxp.onrender.com/api/results/quiz/${quizId}?userId=${userId}`
           ),
-          fetch(`http://localhost:8080/api/quiz/${quizId}`),
+          fetch(`https://quiz-app-vrxp.onrender.com/api/quiz/${quizId}`),
         ]);
 
         const resultData = await resultRes.json();
@@ -36,38 +36,7 @@ const ViewResult = () => {
 
         setResult(resultData);
         setQuiz({ ...quizData.quiz, questions: quizData.questions });
-
-        // Calculate score
-        let calculatedScore = 0;
-        resultData.answers.forEach((answer, idx) => {
-          const question = quizData.questions[idx];
-          if (!question) return;
-
-          const selected = answer.selectedOption;
-          const correct =
-            question.correctAnswers || question.correctAnswer || [];
-
-          const normalize = (val) => {
-            if (Array.isArray(val)) {
-              return val.map((v) => String(v).trim().toLowerCase()).sort();
-            } else {
-              return [String(val).trim().toLowerCase()];
-            }
-          };
-
-          const normalizedSelected = normalize(selected);
-          const normalizedCorrect = normalize(correct);
-
-          const isCorrect =
-            normalizedSelected.length === normalizedCorrect.length &&
-            normalizedSelected.every(
-              (val, index) => val === normalizedCorrect[index]
-            );
-
-          if (isCorrect) calculatedScore++;
-        });
-
-        setScore(calculatedScore);
+        setScore(resultData.score || 0);
       } catch (err) {
         console.error("❌ Error loading results:", err);
         setError("Something went wrong while loading quiz result.");
@@ -162,7 +131,8 @@ const ViewResult = () => {
                     : isCorrect
                     ? "border-green-500 bg-green-50"
                     : "border-red-500 bg-red-50"
-                }`}>
+                }`}
+              >
                 <p className="font-semibold">
                   Q{idx + 1}. {q.text}
                 </p>
@@ -175,7 +145,8 @@ const ViewResult = () => {
                         : isCorrect
                         ? "text-green-600"
                         : "text-red-600"
-                    }>
+                    }
+                  >
                     {userValue}
                   </span>
                 </p>
@@ -205,7 +176,8 @@ const ViewResult = () => {
         <div className="flex justify-center mt-8">
           <button
             onClick={() => navigate("/")}
-            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+          >
             Back to Dashboard
           </button>
         </div>
