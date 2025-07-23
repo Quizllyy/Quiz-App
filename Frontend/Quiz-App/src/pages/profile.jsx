@@ -8,6 +8,7 @@ export default function Profile() {
   const { user, signOut, token } = useAuth();
   const navigate = useNavigate();
   const [results, setResults] = useState([]);
+  const [adminResults, setAdminResults] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -15,6 +16,10 @@ export default function Profile() {
       navigate("/");
     } else {
       fetchUserResults();
+
+      if (user.role === "admin") {
+        fetchAdminResults();
+      }
     }
   }, [user, navigate]);
 
@@ -34,9 +39,25 @@ export default function Profile() {
     }
   };
 
+  const fetchAdminResults = async () => {
+    try {
+      const res = await axios.get(
+        `https://quiz-app-vrxp.onrender.com/api/results/admin-all-results`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setAdminResults(res.data);
+    } catch (err) {
+      console.error("Admin fetch failed:", err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-100 to-indigo-200 pt-20 pb-10 flex items-center justify-center">
-      <div className="bg-white rounded-2xl shadow-xl p-10 w-full max-w-3xl relative">
+      <div className="bg-white rounded-2xl shadow-xl p-10 w-full max-w-4xl relative">
         {/* Three Dots Menu */}
         <div className="absolute top-4 right-6">
           <button
@@ -67,7 +88,7 @@ export default function Profile() {
           <p className="text-md text-gray-500">{user?.email}</p>
         </div>
 
-        {/* Quiz Results */}
+        {/* User's Own Results */}
         <div>
           <h3 className="text-xl font-semibold text-gray-700 mb-4">
             Your Quiz Results
@@ -105,6 +126,45 @@ export default function Profile() {
             <p className="text-gray-500">No quiz results found.</p>
           )}
         </div>
+
+        {/* Admin View of All Quiz Attempts */}
+        {user?.role === "admin" && (
+          <div className="mt-12">
+            <h3 className="text-xl font-semibold text-gray-700 mb-4">
+              📊 All Quiz Attempts
+            </h3>
+            {adminResults.length > 0 ? (
+              <table className="w-full table-auto text-left border">
+                <thead>
+                  <tr className="bg-indigo-200 text-gray-800">
+                    <th className="px-4 py-2">Student</th>
+                    <th className="px-4 py-2">Email</th>
+                    <th className="px-4 py-2">Quiz</th>
+                    <th className="px-4 py-2">Score</th>
+                    <th className="px-4 py-2">Submitted</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {adminResults.map((res) => (
+                    <tr key={res._id} className="border-b hover:bg-gray-50">
+                      <td className="px-4 py-2">{res.userId?.name}</td>
+                      <td className="px-4 py-2">{res.userId?.email}</td>
+                      <td className="px-4 py-2">{res.quizId?.title}</td>
+                      <td className="px-4 py-2">
+                        {res.score} / {res.totalQuestions}
+                      </td>
+                      <td className="px-4 py-2">
+                        {new Date(res.submittedAt).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>No results found.</p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

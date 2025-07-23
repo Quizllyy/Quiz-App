@@ -41,6 +41,28 @@ const Quiz = () => {
   }, [quizId]);
 
   useEffect(() => {
+    const checkAttempted = async () => {
+      if (!userId || !quizId) return;
+
+      try {
+        const res = await fetch(
+          `https://quiz-app-vrxp.onrender.com/api/results/quiz/${quizId}?userId=${userId}`
+        );
+
+        if (res.ok) {
+          const data = await res.json();
+          alert("⚠️ You have already attempted this quiz.");
+          navigate(`/quiz/${quizId}/result`, { state: { result: data } });
+        }
+      } catch (err) {
+        console.error("Error checking quiz attempt:", err);
+      }
+    };
+
+    checkAttempted();
+  }, [quizId, userId]);
+
+  useEffect(() => {
     if (quizStarted && timer > 0) {
       const interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
       return () => clearInterval(interval);
