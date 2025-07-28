@@ -17,7 +17,7 @@ import EditQuiz from "./pages/EditQuiz";
 import FinalizeQuiz from "./pages/FinalizeQuiz.jsx";
 import Quiz from "./pages/Quiz.jsx";
 import ReviewUploadedQuiz from "./pages/ReviewUploadedQuiz";
-import Profile from "./pages/Profile.jsx";
+import Profile from "./pages/profile.jsx";
 import ViewResult from "./pages/ViewResult.jsx";
 import AdminResults from "./pages/AdminResults.jsx";
 import { AuthProvider } from "./context/AuthContext";
