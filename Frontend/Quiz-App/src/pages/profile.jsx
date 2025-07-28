@@ -62,8 +62,7 @@ export default function Profile() {
         <div className="absolute top-4 right-6">
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="text-gray-600 text-xl focus:outline-none"
-          >
+            className="text-gray-600 text-xl focus:outline-none">
             <FaEllipsisV />
           </button>
           {menuOpen && (
@@ -73,8 +72,7 @@ export default function Profile() {
                   signOut();
                   navigate("/");
                 }}
-                className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-100"
-              >
+                className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-100">
                 Logout
               </button>
             </div>
@@ -106,8 +104,7 @@ export default function Profile() {
                 {results.map((result) => (
                   <tr
                     key={result._id}
-                    className="border-b border-gray-200 hover:bg-gray-50"
-                  >
+                    className="border-b border-gray-200 hover:bg-gray-50">
                     <td className="px-4 py-2">
                       {result.quizId?.title || "Untitled Quiz"}
                     </td>
@@ -169,3 +166,6 @@ export default function Profile() {
     </div>
   );
 }
+
+// Mnual BMnwwtOS
+// Excel ERAM7Q

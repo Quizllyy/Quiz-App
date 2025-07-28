@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const Quiz = require("../models/quiz");
-const Result = require("../models/Result");
+const Result = require("../models/result");
 const Question = require("../models/questions");
 
 const ExcelQuiz = require("../models/excelQuizSchema");
