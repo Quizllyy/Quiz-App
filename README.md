@@ -1,6 +1,6 @@
 # Quizly
 
-**Live Site:** http://localhost:5173 
+**Live Site:** [http://localhost:5173 ](https://quizlyy.netlify.app/)
 
 ## 📌 Project Description
 
